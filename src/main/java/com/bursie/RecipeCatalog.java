@@ -37,6 +37,8 @@ public class RecipeCatalog {
                 default -> throw new IllegalStateException("Okänd recepttyp i " + resource.getFilename());
             };
             String result = json.path("result").path("id").asText();
+            // Äldre IDE-/Maven-byggen kan ha kvar kopior av de arkiverade mallrecepten.
+            if (result.endsWith("_smithing_template")) continue;
             if (items.find(result) == null) throw new IllegalStateException("Okänt receptresultat: " + result);
             var ingredients = new ArrayList<Set<String>>();
             int width = 0;

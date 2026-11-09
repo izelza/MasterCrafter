@@ -40,6 +40,7 @@ Maven Wrapper hämtar Maven automatiskt första gången. Internet behövs även 
 - `POST /api/crafting/challenges/{challengeId}/solution` avslöjar ett giltigt facit för aktuell utmaning och ger `{challengeId, grid, message}`. Griden innehåller nio fullständiga item-objekt eller `null`. Upprepad hämtning ger samma facit. Försök efter avslöjat facit avvisas med HTTP 409 tills en ny utmaning har skapats.
 - Servern accepterar alla medföljande recept för målföremålet, ingrediensalternativ och taggar. Formade recept får flyttas och spegelvändas vågrätt, men inte roteras. Formlösa recept kontrolleras oberoende av rutornas placering, med rätt antal av varje ingrediens.
 - Målföremål väljs enbart bland crafting-receptens resultat, inte bland alla föremål i inventoryt. Även uppdelningsrecept räknas: ett Slime Block i valfri ruta ger nio Slimeballs enligt de medföljande Minecraft-recepten.
+- Smithing templates är uteslutna som crafting-mål. Deras 19 receptfiler är bevarade i `mc-resources/resources/disabled-recipes/smithing-templates/`, utanför det aktiva recepturvalet. Föremålen finns kvar i inventoryt.
 - `POST /api/quiz/questions` ger `{id, iconUrl, options: [{id, name}, ...]}`.
 - `POST /api/quiz/answers` tar emot `{questionId, optionId}` och ger `{correct, correctName, correctOptionId}`.
 - Webbläsaren skickar automatiskt en sessionscookie så att servern vet vilken utmaning eller quizfråga spelaren har. En quizfråga kan bara besvaras en gång. En ny quizfråga ersätter den tidigare, även om flera flikar är öppna. Quiz och crafting har separata utmaningar.

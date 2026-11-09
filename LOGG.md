@@ -96,3 +96,13 @@
 - Nitton automatiska tester passerar. Alla 1 026 recept kontrolleras även med det konkreta facit som genereras. Nya service- och HTTP-tester verifierar giltigt facit, upprepning, sessioner, spärrade försök, gammal/löst utmaning och återställning.
 - Webbläsartest av den paketerade jar-filen kontrollerade hela befintliga flödet samt tvåklicksskip: samma target vid facit, synliga ingredienser, spärrad Craft!-knapp även vid syntetiskt klick, låst grid vid vänster/högerklick och upplåst ny utmaning vid nästa klick. Även muspekare, dragning, normal automatisk fortsättning och mobilvy passerar. Skärmbild av facit granskades.
 - Testservern stoppades. README.md och BESLUT.md uppdaterades. Nästa steg: Oscar startar om Main och provar Skip recipe följt av Next recipe.
+
+## 2026-11-09 – Smithing templates arkiverade
+- Oscar önskade att alla smithing template-recept skulle inaktiveras men bevaras, och att Slimeball skulle vara craftbart.
+- Identifierade 19 recept vars resultat är smithing templates och flyttade dem från aktiva recipes till mc-resources/resources/disabled-recipes/smithing-templates. Verifierade SHA-256 före och efter varje flytt; JSON-innehållet är oförändrat.
+- Lade till en regel i RecipeCatalog som ignorerar mallrecept utifrån resultat-ID, så gamla IDE-/Maven-kopior eller återimporterade filer inte återaktiverar dem som mål. Inventory och quiz behåller föremålens namn och ikoner.
+- Slimeball var redan aktivt och har aldrig tagits bort. Förstärkte regressionstestet så att Slimeball uttryckligen måste finnas bland målen och ett Slime Block godkänns i griden.
+- Nytt test kontrollerar att samtliga smithing template-föremål saknar aktiva recept och inte finns bland målen, men fortfarande går att söka fram i inventoryt.
+- PowerShells JSON-läsare hade problem med ett annat Minecraft-recept som använder nycklarna I och i. Verifierade därefter samtliga kvarvarande och arkiverade filer med Nodes JSON-läsare, som skiljer på versaler och gemener. Alla 19 mallrecept arkiverades korrekt.
+- Rent Maven-bygge och alla tjugo tester passerar. Kontrollerade även den färdiga jar-filen: 1 007 aktiva recept, inga mallrecept och Slimeball kvar. Det aktiva målurvalet innehåller 864 föremål.
+- Dokumenterade avgränsningen i BESLUT.md, README.md och resurskatalogens beskrivningar. Nästa steg: starta om Main och fortsätt spela; smithing templates ska inte längre kunna bli crafting-mål.

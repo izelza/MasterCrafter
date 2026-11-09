@@ -68,6 +68,7 @@ class CraftingTest {
     @Test
     void targetsAreRecipeResultsAndSlimeballsCanBeUnpackedFromSlimeBlocks() {
         assertThat(recipes.targetIds()).doesNotContain("minecraft:apple");
+        assertThat(recipes.targetIds()).contains("minecraft:slime_ball");
         for (String target : recipes.targetIds()) {
             assertThat(recipes.recipesFor(target)).as(target).isNotEmpty();
             assertThat(recipes.recipesFor(target).stream().anyMatch(recipe -> recipes.matches(target, example(recipe))))
@@ -76,6 +77,17 @@ class CraftingTest {
         var grid = blank();
         grid.set(4, "minecraft:slime_block");
         assertThat(recipes.matches("minecraft:slime_ball", grid)).isTrue();
+    }
+
+    @Test
+    void smithingTemplatesStayInInventoryButHaveNoActiveRecipesOrTargets() {
+        var templates = items.items().stream().filter(item -> item.id().endsWith("_smithing_template")).toList();
+        assertThat(templates).isNotEmpty();
+        for (var template : templates) {
+            assertThat(recipes.targetIds()).doesNotContain(template.id());
+            assertThat(recipes.recipesFor(template.id())).isEmpty();
+        }
+        assertThat(items.search("smithing template")).isNotEmpty();
     }
 
     @Test

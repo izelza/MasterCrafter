@@ -9,6 +9,7 @@ playable/resources/
 ├── items.json          # All playable item IDs
 ├── item-tags.json      # Filtered item tags
 ├── recipes/            # Playable crafting recipes
+├── disabled-recipes/   # Preserved recipes excluded by the game's design
 ├── item-icons/         # Original Minecraft 16×16 PNGs
 ├── render-icons/       # Block Render 64×64 PNGs
 └── lang/
@@ -30,6 +31,11 @@ For example, `minecraft:acacia_boat` corresponds to `<namespace> = minecraft` an
 Render both sizes using nearest-neighbor scaling to preserve Minecraft's pixel-art appearance.
 
 ## Recipes
+
+Game-specific exclusion: the 19 smithing template duplication recipes are
+preserved in `disabled-recipes/smithing-templates/` and are not loaded or packaged
+as active recipes. Their item names and icons remain available in the inventory.
+Slimeball's recipe remains active (one Slime Block produces nine Slimeballs).
 
 `recipes/` contains the original Minecraft JSON recipe definitions, filtered to include only recipes that can be represented using available items.
 
