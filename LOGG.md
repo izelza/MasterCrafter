@@ -150,3 +150,15 @@
 - Maven-paketering passerar. Utökat webbläsartest kontrollerar originaltexturer, 96×96-storlek, 16-pixlars marginal, lagerordning, borttagen hover-outline och att markeringen försvinner när musen lämnar rutan. Hela befintliga flödet med native cursor, dragning, crafting/facit/fortsättning samt mobilvy passerar utan JS-fel.
 - Granskade hover-skärmbild och mätte faktiska pixlar: insidan #C0C0C0, skuggkant #373737, ljus kant #FFFFFF och opåverkad grannruta #8B8B8B. Proverna matchar originalens alfablendning och bevarad slot-textur.
 - Dokumenterade källor, kontrollsummor och geometri i docs/MINECRAFT-HOVER.md samt uppdaterade README.md, färgdokumentet och BESLUT.md. Testservern stoppades. Ändringen committas och pushas enligt projektregeln.
+
+## 2026-11-09 – Dockerfile för Render
+- Magnus har kopplat Render till GitHub-repot och bad om en Dockerfile som bygger och startar Spring Boot-tjänsten. Detta är en uttrycklig utökning från den tidigare avgränsningen till lokal körning.
+- Kontrollerade Renders officiella Docker- och web service-dokumentation: Docker-runtime, Dockerfile i roten, bindning för inkommande HTTP och PORT-miljövariabeln. Verifierade också att officiella eclipse-temurin-taggarna 24-jdk och 24-jre finns för Linux/amd64.
+- Lade till tvåstegs-Dockerfile. Byggsteget använder Java 24 och Maven Wrapper, cachar beroendesteget och paketerar jar med frontend/Minecraft-resurser. Körsteget innehåller Java 24 JRE och jar-filen, kör som UID/GID 10001 och använder exec-form ENTRYPOINT för direkt Java-start.
+- Lade till application.properties med server.port=${PORT:8080}. Docker sätter PORT=10000 som standard och SERVER_ADDRESS=0.0.0.0; Render kan ange sin egen port. Vanlig lokal körning behåller standardport 8080.
+- .dockerignore använder en lista över tillåtna byggindata och lämnar ute lokala Git-/IDE-/verktygsfiler, dokumentation, tidigare byggen och arkiverade smithing template-recept.
+- README.md beskriver befintlig Render-tjänst: Docker-runtime, ./Dockerfile, repo-roten som kontext, master, tom Docker Command och valfri health check /api/hello. Lade också till lokala docker build/run-exempel.
+- Docker finns inte installerat på datorn, så själva image-bygget eller Linux-containern kunde inte köras här. Verifierade Unix-wrapperns LF-radslut, officiella bildtaggar, samma Maven dependency:go-offline/package-steg lokalt och alla tjugo tester; allt passerar.
+- Startade den byggda jar-filen med PORT=18081 och SERVER_ADDRESS=0.0.0.0 utan kommandoargument som skriver över porten. Verifierade HTTP via IPv4 för health, frontend, aktuell utmaning, facit, item-ikon, WOFF2-font och hover-textur. Windows rapporterade en dual-stack-listener och IPv4-anropen fungerade. Testservern stoppades efteråt.
+- Ett tillfälligt testscriptsvariabelnamn krockade med PowerShells skrivskyddade HOME. Bytte till ett uppgiftsspecifikt namn och körde om kontrollen; ingen ändring av appen behövdes.
+- Dockerfilen och dokumentationen committas/pushas så att den anslutna Render-tjänsten kan bygga den. Render-deployens faktiska resultat har inte verifierats från denna miljö.

@@ -1,0 +1,14 @@
+# Only send the inputs needed by the Dockerfile.
+**
+!pom.xml
+!mvnw
+!.mvn/
+!.mvn/**
+!src/
+!src/**
+!mc-resources/
+!mc-resources/resources/
+!mc-resources/resources/**
+
+# Archived recipes are kept in Git but are not part of the deployed game.
+mc-resources/resources/disabled-recipes/

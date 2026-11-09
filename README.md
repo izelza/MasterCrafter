@@ -34,6 +34,30 @@ Bygg med `.\mvnw.cmd package`. Starta den byggda appen med
 
 Maven Wrapper hämtar Maven automatiskt första gången. Internet behövs även för att hämta projektets beroenden.
 
+## Docker och Render
+
+`Dockerfile` i projektroten bygger appen med Maven Wrapper och Java 24 och startar den automatiskt med Java 24 JRE. Frontend, font, ikoner och aktiva recept paketeras i samma jar-fil. Containern kör som icke-root och behöver ingen databas eller diskvolym.
+
+I den redan anslutna Render-tjänsten:
+
+- Välj **Docker** som Language/runtime och repots rot som byggkontext.
+- Använd **Dockerfile Path: `./Dockerfile`** och branch **`master`**.
+- Låt **Docker Command** vara tomt; Dockerfilens startkommando används.
+- Använd **Health Check Path: `/api/hello`** om en kontrollsökväg ska anges.
+
+Appen lyssnar på `0.0.0.0` i containern och använder miljövariabeln `PORT` som Render anger. Containerstandard är 10000; lokal körning utan `PORT` använder fortfarande 8080. Render behöver internet under bygget för att hämta Java-bilder och Maven-beroenden. Senare körning använder de lokalt paketerade resurserna.
+
+På en dator med Docker kan du testa med:
+
+```powershell
+docker build -t mastercrafter .
+docker run --rm -p 8080:10000 mastercrafter
+```
+
+Öppna sedan http://localhost:8080. Egen port kan exempelvis provas med `docker run --rm -e PORT=9090 -p 8080:9090 mastercrafter`.
+
+`.dockerignore` tar endast med byggindata. Lokala verktyg, `.git`, dokumentation, tidigare byggen och arkiverade mallrecept skickas inte som byggkontext. Dockerbygget cachar beroendesteget och hoppar över testkörning; kör projektets tester separat med Maven.
+
 ## Spelets API
 
 - `GET /api/items?q=oak%20planks&page=0` söker bland ingredienser och ger `{items, total, page, pages}` med högst 48 föremål per sida. Sidnummer börjar på noll.
