@@ -8,6 +8,8 @@ let page = 0;
 let pages = 1;
 let searchVersion = 0;
 let searchTimer;
+let paintGesture = null;
+const gridElement = element('craft-grid');
 
 async function request(url, body) {
     let response;
@@ -39,6 +41,7 @@ function icon(item) {
     const img = document.createElement('img');
     img.src = item.iconUrl;
     img.alt = '';
+    img.draggable = false;
     return img;
 }
 
@@ -56,7 +59,7 @@ function refreshGrid() {
     element('clear-grid').disabled = working || solved || !challenge || grid.every(item => !item);
     element('eraser').disabled = working || solved || !challenge;
     element('new-recipe').disabled = working;
-    element('new-recipe').textContent = !challenge ? 'New recipe' : solved ? 'Next recipe →' : 'Skip recipe';
+    element('new-recipe').textContent = !challenge ? 'New recipe' : 'Skip recipe';
 }
 
 function changeCell(index, item) {
@@ -70,27 +73,85 @@ for (let index = 0; index < 9; index++) {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'grid-cell';
+    button.dataset.slot = index;
     button.addEventListener('click', () => changeCell(index, selected));
-    button.addEventListener('contextmenu', event => {
-        event.preventDefault();
-        changeCell(index, null);
-    });
     button.addEventListener('keydown', event => {
         if (event.key === 'Delete' || event.key === 'Backspace') {
             event.preventDefault();
             changeCell(index, null);
         }
     });
-    element('craft-grid').append(button);
+    gridElement.append(button);
 }
+
+function finishPainting() {
+    if (!paintGesture) return;
+    const pointerId = paintGesture.pointerId;
+    paintGesture = null;
+    if (gridElement.hasPointerCapture(pointerId)) gridElement.releasePointerCapture(pointerId);
+}
+
+function paintAt(x, y) {
+    const slot = document.elementFromPoint(x, y)?.closest('.grid-cell');
+    if (!slot || !gridElement.contains(slot)) return;
+    const index = Number(slot.dataset.slot);
+    if (paintGesture.visited.has(index)) return;
+    paintGesture.visited.add(index);
+    changeCell(index, paintGesture.item);
+}
+
+function paintTo(x, y) {
+    const fromX = paintGesture.x;
+    const fromY = paintGesture.y;
+    const dx = x - fromX;
+    const dy = y - fromY;
+    // Sample the path so fast movements still fill every crossed slot.
+    const steps = Math.max(1, Math.ceil(Math.hypot(dx, dy) / 12));
+    for (let step = 1; step <= steps; step++) {
+        paintAt(fromX + dx * step / steps, fromY + dy * step / steps);
+    }
+    paintGesture.x = x;
+    paintGesture.y = y;
+}
+
+gridElement.addEventListener('contextmenu', event => event.preventDefault());
+gridElement.addEventListener('pointerdown', event => {
+    if (event.button !== 2 || working || solved || !challenge) return;
+    event.preventDefault();
+    finishPainting();
+    paintGesture = {
+        pointerId: event.pointerId, item: selected, visited: new Set(),
+        x: event.clientX, y: event.clientY
+    };
+    gridElement.setPointerCapture(event.pointerId);
+    paintAt(event.clientX, event.clientY);
+});
+gridElement.addEventListener('pointermove', event => {
+    if (!paintGesture || paintGesture.pointerId !== event.pointerId) return;
+    if (!(event.buttons & 2)) {
+        finishPainting();
+        return;
+    }
+    event.preventDefault();
+    paintTo(event.clientX, event.clientY);
+});
+gridElement.addEventListener('pointerup', event => {
+    if (paintGesture?.pointerId === event.pointerId && !(event.buttons & 2)) {
+        paintTo(event.clientX, event.clientY);
+        finishPainting();
+    }
+});
+gridElement.addEventListener('pointercancel', finishPainting);
+gridElement.addEventListener('lostpointercapture', finishPainting);
+window.addEventListener('blur', finishPainting);
 
 function selectItem(item) {
     selected = item;
     element('selected-icon').hidden = !item;
     if (item) element('selected-icon').src = item.iconUrl;
     element('selected-name').textContent = item
-        ? `Selected: ${item.name}. Click a slot to place it.`
-        : 'Erase selected. Click a slot to clear it.';
+        ? `Selected: ${item.name}. Click or hold right-click and drag to place.`
+        : 'Erase selected. Click or hold right-click and drag to clear slots.';
     element('eraser').setAttribute('aria-pressed', String(!item));
     for (const button of element('inventory').children) {
         button.setAttribute('aria-pressed', String(button.dataset.itemId === item?.id));
@@ -137,22 +198,23 @@ async function loadItems(requestedPage = 0) {
     }
 }
 
-async function newChallenge() {
+async function newChallenge(previousSuccess = null) {
     if (working) return;
+    finishPainting();
     working = true;
     solved = false;
     challenge = null;
     grid.fill(null);
     element('target-name').textContent = 'Loading recipe…';
     element('target-icon').hidden = true;
-    feedback('Loading recipe…');
+    feedback(previousSuccess ?? 'Loading recipe…', previousSuccess ? 'success' : '');
     refreshGrid();
     try {
         challenge = await request('/api/crafting/challenges', {});
         element('target-name').textContent = challenge.target.name;
         element('target-icon').src = challenge.target.iconUrl;
         element('target-icon').hidden = false;
-        feedback('Place your ingredients and click Craft!');
+        feedback(previousSuccess ?? 'Place your ingredients and click Craft!', previousSuccess ? 'success' : '');
     } catch (error) {
         element('target-name').textContent = 'Could not load the recipe';
         feedback(error.message, 'error');
@@ -164,7 +226,9 @@ async function newChallenge() {
 
 async function craft() {
     if (working || solved || !challenge || grid.every(item => !item)) return;
+    finishPainting();
     working = true;
+    let nextRecipeMessage = null;
     refreshGrid();
     feedback('Checking your recipe…');
     try {
@@ -174,13 +238,14 @@ async function craft() {
         });
         solved = result.correct;
         feedback(result.message, result.correct ? 'success' : 'error');
+        if (result.correct) nextRecipeMessage = result.message;
     } catch (error) {
         feedback(error.message, 'error');
     } finally {
         working = false;
-        refreshGrid();
-        if (solved) element('new-recipe').focus({ preventScroll: true });
+        if (!nextRecipeMessage) refreshGrid();
     }
+    if (nextRecipeMessage) await newChallenge(nextRecipeMessage);
 }
 
 element('item-search').addEventListener('input', () => {
@@ -207,7 +272,7 @@ element('clear-grid').addEventListener('click', () => {
     feedback('The grid is empty. Try a new combination.');
 });
 element('craft').addEventListener('click', craft);
-element('new-recipe').addEventListener('click', newChallenge);
+element('new-recipe').addEventListener('click', () => newChallenge());
 refreshGrid();
 loadItems();
 newChallenge();

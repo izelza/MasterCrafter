@@ -7,9 +7,9 @@
 3. Kör `com.bursie.Main` med den gröna pilen vid `main`.
 4. Öppna http://localhost:8080 i webbläsaren för att spela crafting-spelet.
 
-Spelet har engelska föremålsnamn och engelskt gränssnitt. Sök fram en ingrediens, välj den och klicka i crafting-gridens rutor. Klicka på **Craft!** för att låta servern kontrollera receptet. Vid fel kan du ändra griden och försöka igen. Vid rätt går du vidare med **Next recipe**; **Skip recipe** byter ett recept du inte vill lösa.
+Spelet har engelska föremålsnamn och engelskt gränssnitt. Sök fram en ingrediens, välj den och klicka i crafting-gridens rutor. Håll höger musknapp nere och dra över griden för att fylla flera rutor med samma ingrediens. Klicka på **Craft!** för att låta servern kontrollera receptet. Vid fel kan du ändra griden och försöka igen. Vid rätt hämtas nästa recept direkt och griden töms automatiskt; bekräftelsen på det klarade receptet ligger kvar tills du börjar nästa försök. Vald ingrediens och inventory-sökning behålls. **Skip recipe** byter ett recept du inte vill lösa.
 
-Välj **Erase** och klicka för att tömma en ruta, eller högerklicka direkt i rutan. Delete/Backspace fungerar också när en ruta har tangentbordsfokus. **Clear grid** tar bort alla ingredienser. Listan kan sökas med engelska namn (t.ex. **oak planks**) och bläddras i; alla tillgängliga föremål går att välja.
+Välj **Erase** och klicka för att tömma en ruta, eller håll höger musknapp nere och dra för att sudda flera rutor. Delete/Backspace fungerar också när en ruta har tangentbordsfokus. **Clear grid** tar bort alla ingredienser. Listan kan sökas med engelska namn (t.ex. **oak planks**) och bläddras i; alla tillgängliga föremål går att välja.
 
 Frågespelet finns kvar via länken **Item quiz** eller http://localhost:8080/quiz.html. Stoppa servern med IntelliJs stoppknapp.
 

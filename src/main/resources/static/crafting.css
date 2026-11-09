@@ -10,7 +10,7 @@ main { display: block; width: min(1160px, 100%); margin: auto; padding: 28px 24p
 .target img { width: 56px; height: 56px; image-rendering: pixelated; object-fit: contain; }
 .target p { color: #b2c3b1; margin: 0 0 4px; font-size: .8rem; }
 .target strong { font-size: 1.15rem; overflow-wrap: anywhere; }
-.craft-grid { display: grid; grid-template-columns: repeat(3, 72px); gap: 5px; justify-content: center; margin: 24px 0 16px; }
+.craft-grid { display: grid; grid-template-columns: repeat(3, 72px); gap: 5px; justify-content: center; margin: 24px 0 16px; user-select: none; }
 .grid-cell { height: 72px; padding: 8px; display: grid; place-items: center; background: #20392d; border: 3px solid #526c4e; border-top-color: #10251b; border-left-color: #10251b; }
 .grid-cell img { width: 48px; height: 48px; image-rendering: pixelated; pointer-events: none; }
 .grid-cell:hover:enabled { background: #36533b; }

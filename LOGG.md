@@ -42,3 +42,12 @@
 - Rent Maven-bygge och alla tolv automatiska tester passerar. Testet kontrollerar sökning efter OAK PLANKS och att samtliga 1 038 namn motsvarar den engelska resursfilen.
 - Båda webbläsartesterna passerar för den byggda jar-filen: rätt/fel, fortsatt spel, engelskt målnamn och Craft!-knapp, inventory, placering/suddning samt mobilvy. Uppdaterade testskriptens gamla svenska förväntningar till engelska.
 - Nästa steg: ladda om Maven-projektet och starta om Main; uppdatera webbläsaren för att prova engelska versionen.
+
+## 2026-11-09 – Högerdrag och automatiskt nästa recept
+- Oscar bekräftade att engelska versionen fungerade och ville förbättra känslan av inventory och placering.
+- Lade till placering genom att hålla höger musknapp nere och dra över griden. Samma ingrediens används under hela dragningen och varje passerad ruta fylls. Även snabba rörelser mellan mus-events fångas genom att provta sträckan, inklusive sista rörelsen vid släpp.
+- Med Erase valt kan samma rörelse användas för att sudda. Högerklick med vald ingrediens placerar nu föremålet i stället för att ta bort det. Vanligt vänsterklick och Delete/Backspace finns kvar.
+- Pointer capture håller ihop dragningen även utanför griden. Släpp, avbruten pointer, förlorad capture, fönsterfokusförlust, nytt recept och inskickat försök avslutar dragningen. Ikoner går inte att dra som vanliga webbläsarbilder.
+- Rätt försök hämtar nästa recept direkt, utan timer eller extra klick. Griden töms men vald ingrediens och sökning behålls. Bekräftelsen på föregående recept ligger kvar vid det nya tills spelaren börjar ändra eller skicka nästa försök. Felaktiga försök stannar på samma recept.
+- Maven-bygget och alla tolv backend/integrationstester passerar. Webbläsartest med riktiga högerknapps-events verifierade snabb dragning över mellanliggande rutor, släpp utanför griden, fokusförlust, suddragning, felaktigt försök, korrekt crafting med automatisk fortsättning, behållen ingrediens och mobilvy utan horisontell scroll eller JS-fel.
+- Uppdaterade instruktioner och beslut. Nästa steg är att starta om Main, uppdatera webbsidan och låta Oscar prova känslan med flera olika recept.
