@@ -35,7 +35,7 @@ class QuizControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.IMAGE_PNG));
         mvc.perform(get("/")).andExpect(status().isOk()).andExpect(forwardedUrl("index.html"));
-        var page = mvc.perform(get("/index.html")).andExpect(status().isOk()).andReturn().getResponse();
+        var page = mvc.perform(get("/quiz.html")).andExpect(status().isOk()).andReturn().getResponse();
         assertThat(page.getContentAsString(java.nio.charset.StandardCharsets.UTF_8))
                 .contains("Vad heter det här?");
     }

@@ -23,6 +23,10 @@ body {
 }
 .brand { color: #f1f5e9; font-weight: 900; letter-spacing: -1px; text-decoration: none; }
 .brand span { color: #a2d578; }
+.mode-nav { display: flex; gap: 20px; font-size: .85rem; }
+.mode-nav a { color: #bccdb9; text-decoration: none; padding: 6px 0; }
+.mode-nav a[aria-current] { color: #c8edaa; border-bottom: 2px solid #a2d578; }
+.mode-nav a:hover { color: #fff; }
 .edition, .eyebrow { font-size: .7rem; font-weight: 750; letter-spacing: 2px; color: #b2c3b1; }
 main { flex: 1; display: grid; place-items: center; padding: 36px 20px; }
 .game { width: min(100%, 580px); text-align: center; }

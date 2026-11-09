@@ -22,3 +22,14 @@
 - Byggde jar och provade den på separat testport 8081 i headless Edge: laddad ikon, rätt svar, nästa fråga, fel svar, mobilvy utan horisontell scroll och inga JavaScript-fel. Skärmbilder granskades visuellt.
 - Hämtade portabelt Git till den ignorerade katalogen .tools/git och initierade projektets Git-repository. Ingen global installation eller konfigurationsändring gjordes.
 - Nästa steg: Oscar laddar om Maven-projektet, startar om Main och provar spelet på http://localhost:8080. Låt återkopplingen styra nästa steg.
+
+## 2026-11-09 – Första crafting-spelet
+- Oscar testade frågespelet utan uppenbara fel och ville gå vidare till crafting. Han godkände upplägget att välja ingrediens och klicka i griden.
+- Byggde en 3×3-grid med sökning bland samtliga 1 038 föremål, sidindelning, markerad ingrediens, suddverktyg, högerklick, Delete/Backspace och tömning av hela griden.
+- Läste in 1 026 riktiga recept med 883 olika målföremål. Kontrollen hanterar taggar, alternativa ingredienser, alla recept för samma resultat, förflyttning, vågrät spegling och formlösa recept med upprepade ingredienser. Överlappande taggar hanteras genom att prova möjliga ingrediensfördelningar.
+- Lade till GET /api/items samt POST /api/crafting/challenges och /api/crafting/attempts. Aktuell utmaning sparas per session. Fel kan rättas utan att receptet byts; efter rätt svar låser webbsidan griden tills nästa recept. En upprepad HTTP-sändning fungerar också om nätverkssvaret skulle försvinna.
+- Crafting ligger på startsidan. Frågespelet finns kvar på /quiz.html och båda nås via navigationen.
+- Tolv automatiska tester passerar, inklusive tidigare quiztester. Crafting-testet provar samtliga riktiga recept och deras tillåtna förflyttningar/speglingar, fel/missade ingredienser, taggar, alternativa recept, sessioner, ogiltiga försök och bläddring genom hela itemlistan.
+- Testade den byggda jar-filen på separat port 8081 i headless Edge: bläddring, sökning, placering, högerklick/sudda/töm, felaktigt försök, korrekt crafting och nästa utmaning. Granskade desktop- och mobilskärmbilder och kontrollerade att mobilvyn inte får horisontell scroll. Även frågespelets webbläsartest passerar.
+- Uppdaterade README.md och BESLUT.md. Sparar fungerande milstolpe i Git.
+- Nästa steg: Oscar laddar om Maven, startar om Main och provar crafting på http://localhost:8080. Utvärdera framför allt hur enkelt det är att söka och placera ingredienser innan fler funktioner väljs.

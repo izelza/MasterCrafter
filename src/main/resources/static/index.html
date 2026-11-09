@@ -4,32 +4,65 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#142a25">
-    <title>MasterCrafter – Minecraft-quiz</title>
+    <title>MasterCrafter – Crafting</title>
     <link rel="stylesheet" href="/style.css">
-    <script src="/game.js" defer></script>
+    <link rel="stylesheet" href="/crafting.css">
+    <script src="/crafting.js" defer></script>
 </head>
 <body>
     <header class="site-header">
         <a class="brand" href="/">MASTER<span>CRAFTER</span></a>
-        <span class="edition">MINECRAFT-QUIZ</span>
+        <nav class="mode-nav" aria-label="Spelläge"><a href="/" aria-current="page">Crafting</a><a href="/quiz.html">Frågespel</a></nav>
     </header>
     <main>
-        <section class="game" aria-labelledby="game-title">
-            <p class="eyebrow">KÄNNER DU IGEN FÖREMÅLET?</p>
-            <h1 id="game-title">Vad heter det här?</h1>
-            <p class="intro">Kolla på bilden och välj rätt namn.</p>
-            <div class="item-stage">
-                <div class="item-slot">
-                    <img id="item-image" alt="Minecraft-föremålet du ska namnge" width="112" height="112" hidden>
-                    <span id="loading-icon" aria-hidden="true">?</span>
+        <div class="crafting-heading">
+            <p class="eyebrow">FRÅN INGREDIENS TILL FÖREMÅL</p>
+            <h1>Dags att crafta.</h1>
+            <p class="intro">Välj en ingrediens. Placera den i rutorna. Kan du receptet?</p>
+        </div>
+        <div class="crafting-layout">
+            <section class="panel" aria-labelledby="craft-title">
+                <div class="panel-header"><h2 id="craft-title">Craftingbord</h2><small>3 × 3</small></div>
+                <div class="target">
+                    <img id="target-icon" alt="" width="56" height="56" hidden>
+                    <div><p>Du ska tillverka</p><strong id="target-name">Hämtar recept…</strong></div>
                 </div>
-            </div>
-            <div id="options" class="options" aria-label="Svarsalternativ"></div>
-            <p id="feedback" class="feedback" role="status" aria-live="polite">Hämtar en fråga…</p>
-            <button id="next" class="next" type="button" hidden>Nästa fråga <span aria-hidden="true">→</span></button>
-            <noscript>Aktivera JavaScript i webbläsaren för att spela.</noscript>
-        </section>
+                <div id="craft-grid" class="craft-grid" role="group" aria-label="Crafting-grid, tre rader och tre kolumner"></div>
+                <div class="tools">
+                    <button id="eraser" type="button" class="secondary" aria-pressed="true">Sudda</button>
+                    <button id="clear-grid" type="button" class="secondary">Töm griden</button>
+                </div>
+                <p class="hint">Klicka i rutorna för att placera vald ingrediens. Välj Sudda eller högerklicka för att ta bort.</p>
+                <div class="selected-item" aria-live="polite">
+                    <img id="selected-icon" alt="" width="32" height="32" hidden>
+                    <span id="selected-name">Välj en ingrediens i listan.</span>
+                </div>
+                <div class="craft-actions">
+                    <button id="craft" type="button" class="next" disabled>Crafta!</button>
+                    <button id="new-recipe" type="button" class="secondary">Hoppa över</button>
+                </div>
+                <p id="craft-feedback" class="feedback" role="status" aria-live="polite">Hämtar recept…</p>
+            </section>
+            <section class="panel" aria-labelledby="inventory-title">
+                <div class="panel-header"><h2 id="inventory-title">Ingredienser</h2><small>Välj och placera</small></div>
+                <label for="item-search" class="search-label">Sök bland alla föremål</label>
+                <div class="search-box">
+                    <input id="item-search" type="search" placeholder="Till exempel ekplankor eller pinne" autocomplete="off" maxlength="100">
+                    <button id="clear-search" type="button" class="secondary">Rensa</button>
+                </div>
+                <p id="inventory-status" class="inventory-status" role="status" aria-live="polite">Hämtar ingredienser…</p>
+                <button id="retry-items" type="button" class="secondary" hidden>Försök igen</button>
+                <div id="inventory" class="inventory" role="group" aria-label="Tillgängliga ingredienser"></div>
+                <div class="pagination">
+                    <button id="previous-page" type="button" class="secondary" disabled>← Föregående</button>
+                    <span id="page-label"></span>
+                    <button id="next-page" type="button" class="secondary" disabled>Nästa →</button>
+                </div>
+                <p class="hint">Varje val räcker till hur många rutor du vill. Sökningen tar med alla tillgängliga föremål.</p>
+            </section>
+        </div>
+        <noscript>Aktivera JavaScript i webbläsaren för att spela.</noscript>
     </main>
-    <footer>Byggt av Oscar &amp; Codex <span aria-hidden="true">·</span> Ett föremål i taget.</footer>
+    <footer>Byggt av Oscar &amp; Codex <span aria-hidden="true">·</span> Ett recept i taget.</footer>
 </body>
 </html>

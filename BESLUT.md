@@ -4,3 +4,5 @@
 - 2026-11-09: Första tekniska steget är `GET /api/hello`, som returnerar JSON. Därefter prioriteras det minimala Minecraft-frågespelet enligt AGENTS.md.
 - 2026-11-09: Oscar väljer svenska itemnamn. Frågespelet använder namn och ikoner från mc-resources, som paketeras med appen via Maven.
 - 2026-11-09: Frontend är vanlig HTML/CSS/JavaScript som serveras av Spring Boot. `POST /api/quiz/questions` skapar en fråga, `POST /api/quiz/answers` kontrollerar svaret. Aktuell fråga sparas i webbläsarens serversession; inga poäng eller tidsgränser ännu.
+- 2026-11-09: Oscar har testat frågespelet och vill gå vidare till crafting. Han godkänner att välja en ingrediens och sedan klicka i 3×3-griden. Alla föremål är sökbara och bläddringsbara; sudda, högerklick och tömning stöds.
+- 2026-11-09: Crafting är startsidan; frågespelet finns kvar på /quiz.html. Backend kontrollerar alla medföljande receptvarianter, taggar, förflyttningar och vågräta speglingar. Felaktiga försök kan rättas och skickas igen; recept kan hoppas över. Inga poäng eller tidsgränser.
