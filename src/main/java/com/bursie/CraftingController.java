@@ -42,6 +42,15 @@ public class CraftingController {
         }
     }
 
+    @PostMapping("/api/crafting/challenges/{challengeId}/solution")
+    public CraftingSession.Solution reveal(@PathVariable String challengeId, HttpSession session) {
+        try {
+            return crafting.reveal(gameSession(session), challengeId);
+        } catch (IllegalStateException exception) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, exception.getMessage());
+        }
+    }
+
     // HTTP-sessionen hör hemma i webblagret. Servicen får bara spelmodellen.
     private CraftingSession gameSession(HttpSession session) {
         synchronized (session) {

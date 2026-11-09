@@ -52,6 +52,9 @@ public class CraftingService {
             if (challenge == null || !challenge.id().equals(challengeId)) {
                 throw new IllegalStateException("Get a new recipe and try again.");
             }
+            if (game.status() == CraftingSession.Status.REVEALED) {
+                throw new IllegalStateException("The recipe has been revealed. Get a new recipe to continue.");
+            }
             var previousResult = game.resultFor(grid);
             if (previousResult != null) return previousResult;
             if (game.status() == CraftingSession.Status.SOLVED) {
@@ -63,6 +66,23 @@ public class CraftingService {
                     : "Not quite! Change the ingredients or their positions and try again.");
             game.recordAttempt(grid, result);
             return result;
+        }
+    }
+
+    public CraftingSession.Solution reveal(CraftingSession game, String challengeId) {
+        synchronized (game) {
+            var challenge = game.challenge();
+            if (challenge == null || !challenge.id().equals(challengeId)
+                    || game.status() == CraftingSession.Status.SOLVED) {
+                throw new IllegalStateException("Get a new recipe and try again.");
+            }
+            if (game.status() == CraftingSession.Status.REVEALED) return game.solution();
+            var recipe = recipes.recipesFor(challenge.target().id()).getFirst();
+            var grid = recipe.exampleGrid().stream().map(id -> id == null ? null : items.find(id)).toList();
+            var solution = new CraftingSession.Solution(challenge.id(), grid,
+                    "One correct recipe for " + challenge.target().name() + ". Click Next recipe to continue.");
+            game.reveal(solution);
+            return solution;
         }
     }
 

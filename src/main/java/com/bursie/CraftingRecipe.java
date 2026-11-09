@@ -3,10 +3,25 @@ package com.bursie;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collections;
 
 /** Ett recept: varje ingrediens innehåller de item-ID:n som accepteras i den rutan. */
 public record CraftingRecipe(String id, String resultId, boolean shaped, int width, int height,
                              List<Set<String>> ingredients) {
+    /** Ett konkret facit; taggar och alternativa ingredienser får ett giltigt item var. */
+    public List<String> exampleGrid() {
+        var grid = new ArrayList<String>(Collections.nCopies(9, null));
+        for (int index = 0; index < ingredients.size(); index++) {
+            var alternatives = ingredients.get(index);
+            if (!alternatives.isEmpty()) {
+                int slot = shaped ? (index / width) * 3 + index % width : index;
+                grid.set(slot, alternatives.stream().sorted().findFirst().orElseThrow());
+            }
+        }
+        return Collections.unmodifiableList(grid);
+    }
+
     public boolean matches(List<String> grid) {
         if (grid == null || grid.size() != 9) return false;
         if (!shaped) {

@@ -1,40 +1,22 @@
+import { setupCraftingInput } from './crafting-input.js';
+
 const element = id => document.getElementById(id);
 const grid = Array(9).fill(null);
 let challenge = null;
 let selected = null;
 let solved = false;
 let working = false;
+let showingSolution = false;
+let solutionRequested = false;
 let page = 0;
 let pages = 1;
 let searchVersion = 0;
 let searchTimer;
-let paintGesture = null;
 const gridElement = element('craft-grid');
 const heldIcon = element('held-item');
-let pointerPosition = null;
-
-function updateHeldIcon() {
-    heldIcon.hidden = !selected || !pointerPosition;
-    if (heldIcon.hidden) return;
-    heldIcon.style.left = `${pointerPosition.x}px`;
-    heldIcon.style.top = `${pointerPosition.y}px`;
-}
-
-function trackPointer(event) {
-    if (event.pointerType !== 'mouse') return;
-    pointerPosition = event.clientX >= 0 && event.clientX < window.innerWidth
-        && event.clientY >= 0 && event.clientY < window.innerHeight
-        ? { x: event.clientX, y: event.clientY } : null;
-    updateHeldIcon();
-}
-
-document.addEventListener('pointermove', trackPointer, { capture: true, passive: true });
-document.addEventListener('pointerdown', trackPointer, { capture: true, passive: true });
-document.documentElement.addEventListener('pointerleave', () => {
-    pointerPosition = null;
-    updateHeldIcon();
+const { finishPainting, updateHeldIcon } = setupCraftingInput({
+    gridElement, heldIcon, canEdit: canEditGrid, getSelected: () => selected, onCellChange: changeCell
 });
-
 async function request(url, body) {
     let response;
     try {
@@ -70,6 +52,7 @@ function icon(item) {
 }
 
 function refreshGrid() {
+    gridElement.classList.toggle('is-solution', showingSolution);
     [...element('craft-grid').children].forEach((button, index) => {
         const item = grid[index];
         button.replaceChildren();
@@ -77,108 +60,26 @@ function refreshGrid() {
         const label = `Row ${Math.floor(index / 3) + 1}, column ${index % 3 + 1}: ${item?.name ?? 'empty'}`;
         button.setAttribute('aria-label', label);
         button.title = label;
-        button.disabled = working || solved || !challenge;
+        button.disabled = !canEditGrid();
     });
-    element('craft').disabled = working || solved || !challenge || grid.every(item => !item);
-    element('clear-grid').disabled = working || solved || !challenge || grid.every(item => !item);
+    element('craft').disabled = !canEditGrid() || grid.every(item => !item);
+    element('clear-grid').disabled = !canEditGrid() || grid.every(item => !item);
     element('drop-item').disabled = working || !selected;
     element('new-recipe').disabled = working;
-    element('new-recipe').textContent = !challenge ? 'New recipe' : 'Skip recipe';
+    element('new-recipe').textContent = !challenge ? 'New recipe'
+        : showingSolution ? 'Next recipe →' : solutionRequested ? 'Retry reveal' : 'Skip recipe';
+}
+
+function canEditGrid() {
+    return !working && !solved && !solutionRequested && !!challenge;
 }
 
 function changeCell(index, item) {
-    if (working || solved || !challenge) return;
+    if (!canEditGrid()) return;
     grid[index] = item;
     refreshGrid();
     feedback('Place your ingredients and click Craft!');
 }
-
-for (let index = 0; index < 9; index++) {
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'grid-cell';
-    button.dataset.slot = index;
-    // Mouse actions use pointer events; retain placement by keyboard or touch.
-    button.addEventListener('click', event => {
-        if (event.detail === 0 || (event.pointerType && event.pointerType !== 'mouse')) {
-            changeCell(index, selected);
-        }
-    });
-    button.addEventListener('keydown', event => {
-        if (event.key === 'Delete' || event.key === 'Backspace') {
-            event.preventDefault();
-            changeCell(index, null);
-        }
-    });
-    gridElement.append(button);
-}
-
-function finishPainting() {
-    if (!paintGesture) return;
-    const pointerId = paintGesture.pointerId;
-    paintGesture = null;
-    if (gridElement.hasPointerCapture(pointerId)) gridElement.releasePointerCapture(pointerId);
-}
-
-function paintAt(x, y) {
-    const slot = document.elementFromPoint(x, y)?.closest('.grid-cell');
-    if (!slot || !gridElement.contains(slot)) return;
-    const index = Number(slot.dataset.slot);
-    if (paintGesture.visited.has(index)) return;
-    paintGesture.visited.add(index);
-    changeCell(index, paintGesture.item);
-}
-
-function paintTo(x, y) {
-    const fromX = paintGesture.x;
-    const fromY = paintGesture.y;
-    const dx = x - fromX;
-    const dy = y - fromY;
-    // Sample the path so fast movements still fill every crossed slot.
-    const steps = Math.max(1, Math.ceil(Math.hypot(dx, dy) / 12));
-    for (let step = 1; step <= steps; step++) {
-        paintAt(fromX + dx * step / steps, fromY + dy * step / steps);
-    }
-    paintGesture.x = x;
-    paintGesture.y = y;
-}
-
-gridElement.addEventListener('contextmenu', event => event.preventDefault());
-gridElement.addEventListener('pointerdown', event => {
-    if (event.pointerType !== 'mouse' || ![0, 2].includes(event.button) || working || solved || !challenge) return;
-    event.preventDefault();
-    finishPainting();
-    if (event.button === 2 && !selected) return;
-    paintGesture = {
-        pointerId: event.pointerId, item: event.button === 0 ? null : selected,
-        buttonMask: event.button === 0 ? 1 : 2, visited: new Set(),
-        x: event.clientX, y: event.clientY
-    };
-    gridElement.setPointerCapture(event.pointerId);
-    paintAt(event.clientX, event.clientY);
-});
-gridElement.addEventListener('pointermove', event => {
-    if (!paintGesture || paintGesture.pointerId !== event.pointerId) return;
-    if (!(event.buttons & paintGesture.buttonMask)) {
-        finishPainting();
-        return;
-    }
-    event.preventDefault();
-    paintTo(event.clientX, event.clientY);
-});
-gridElement.addEventListener('pointerup', event => {
-    if (paintGesture?.pointerId === event.pointerId && !(event.buttons & paintGesture.buttonMask)) {
-        paintTo(event.clientX, event.clientY);
-        finishPainting();
-    }
-});
-gridElement.addEventListener('pointercancel', finishPainting);
-gridElement.addEventListener('lostpointercapture', finishPainting);
-window.addEventListener('blur', () => {
-    finishPainting();
-    pointerPosition = null;
-    updateHeldIcon();
-});
 
 function selectItem(item) {
     selected = item;
@@ -240,6 +141,8 @@ async function newChallenge(previousSuccess = null) {
     finishPainting();
     working = true;
     solved = false;
+    showingSolution = false;
+    solutionRequested = false;
     challenge = null;
     grid.fill(null);
     selectItem(null);
@@ -263,7 +166,7 @@ async function newChallenge(previousSuccess = null) {
 }
 
 async function craft() {
-    if (working || solved || !challenge || grid.every(item => !item)) return;
+    if (!canEditGrid() || grid.every(item => !item)) return;
     finishPainting();
     working = true;
     let nextRecipeMessage = null;
@@ -286,6 +189,31 @@ async function craft() {
     if (nextRecipeMessage) await newChallenge(nextRecipeMessage);
 }
 
+async function skipRecipe() {
+    if (working) return;
+    if (!challenge || showingSolution) {
+        await newChallenge();
+        return;
+    }
+    finishPainting();
+    working = true;
+    solutionRequested = true;
+    selectItem(null);
+    refreshGrid();
+    feedback('Loading the correct recipe…');
+    try {
+        const solution = await request(`/api/crafting/challenges/${encodeURIComponent(challenge.id)}/solution`, {});
+        grid.splice(0, grid.length, ...solution.grid);
+        showingSolution = true;
+        feedback(solution.message);
+    } catch (error) {
+        feedback(error.message, 'error');
+    } finally {
+        working = false;
+        refreshGrid();
+    }
+}
+
 element('item-search').addEventListener('input', () => {
     ++searchVersion;
     clearTimeout(searchTimer);
@@ -304,13 +232,13 @@ element('next-page').addEventListener('click', () => loadItems(page + 1));
 element('retry-items').addEventListener('click', () => loadItems());
 element('drop-item').addEventListener('click', () => selectItem(null));
 element('clear-grid').addEventListener('click', () => {
-    if (working || solved || !challenge) return;
+    if (!canEditGrid()) return;
     grid.fill(null);
     refreshGrid();
     feedback('The grid is empty. Try a new combination.');
 });
 element('craft').addEventListener('click', craft);
-element('new-recipe').addEventListener('click', () => newChallenge());
+element('new-recipe').addEventListener('click', skipRecipe);
 refreshGrid();
 loadItems();
 newChallenge();

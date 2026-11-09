@@ -37,6 +37,7 @@ class CraftingTest {
             for (var recipe : recipes.recipesFor(target)) {
                 var original = example(recipe);
                 assertThat(recipe.matches(original)).as(recipe.id()).isTrue();
+                assertThat(recipe.matches(recipe.exampleGrid())).as("facit %s", recipe.id()).isTrue();
                 assertThat(recipes.matches(target, original)).as(recipe.id()).isTrue();
                 if (recipe.shaped()) {
                     for (int y = 0; y <= 3 - recipe.height(); y++) {
@@ -180,6 +181,28 @@ class CraftingTest {
     private JsonNode newChallenge(MockHttpSession session) throws Exception {
         return mapper.readTree(mvc.perform(post("/api/crafting/challenges").session(session))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsByteArray());
+    }
+
+    @Test
+    void revealingShowsAValidRecipeAndPreventsCraftingUntilNextChallenge() throws Exception {
+        var session = new MockHttpSession();
+        var challenge = newChallenge(session);
+        String url = "/api/crafting/challenges/" + challenge.get("id").asText() + "/solution";
+        mvc.perform(post(url).session(new MockHttpSession())).andExpect(status().isConflict());
+        var response = mvc.perform(post(url).session(session)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.challengeId").value(challenge.get("id").asText()))
+                .andReturn().getResponse();
+        var solution = mapper.readTree(response.getContentAsByteArray());
+        assertThat(solution.get("grid").size()).isEqualTo(9);
+        var grid = new ArrayList<String>();
+        for (var item : solution.get("grid")) grid.add(item.isNull() ? null : item.get("id").asText());
+        assertThat(recipes.matches(challenge.at("/target/id").asText(), grid)).isTrue();
+        mvc.perform(post(url).session(session)).andExpect(status().isOk())
+                .andExpect(content().json(response.getContentAsString(java.nio.charset.StandardCharsets.UTF_8)));
+        mvc.perform(attempt(challenge, grid).session(session)).andExpect(status().isConflict());
+        var next = newChallenge(session);
+        mvc.perform(post(url).session(session)).andExpect(status().isConflict());
+        mvc.perform(attempt(next, blank()).session(session)).andExpect(status().isOk());
     }
 
     private org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder attempt(

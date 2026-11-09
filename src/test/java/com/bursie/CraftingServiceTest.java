@@ -16,12 +16,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class CraftingServiceTest {
     private static CraftingService service;
     private static ItemCatalog items;
+    private static RecipeCatalog recipes;
 
     @BeforeAll
     static void loadMinecraftData() throws IOException {
         var mapper = new ObjectMapper();
         items = new ItemCatalog(mapper);
-        service = new CraftingService(items, new RecipeCatalog(mapper, items));
+        recipes = new RecipeCatalog(mapper, items);
+        service = new CraftingService(items, recipes);
     }
 
     @Test
@@ -82,6 +84,38 @@ class CraftingServiceTest {
 
     private static CraftingSession.Challenge stickChallenge(String id) {
         return new CraftingSession.Challenge(id, items.find("minecraft:stick"));
+    }
+
+    @Test
+    void revealedRecipeIsRepeatableAndCannotBeSubmittedEvenFromCachedAttempt() {
+        var game = new CraftingSession();
+        game.start(stickChallenge("reveal-question"));
+        service.attempt(game, "reveal-question", blank());
+        var solution = service.reveal(game, "reveal-question");
+        assertThat(game.status()).isEqualTo(CraftingSession.Status.REVEALED);
+        assertThat(solution.grid()).hasSize(9);
+        assertThat(recipes.matches("minecraft:stick", solution.grid().stream()
+                .map(item -> item == null ? null : item.id()).toList())).isTrue();
+        assertThat(service.reveal(game, "reveal-question")).isSameAs(solution);
+        assertThatThrownBy(() -> service.attempt(game, "reveal-question", blank()))
+                .isInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(() -> service.attempt(game, "reveal-question", stickGrid()))
+                .isInstanceOf(IllegalStateException.class);
+        service.newChallenge(game);
+        assertThat(game.status()).isEqualTo(CraftingSession.Status.ACTIVE);
+        assertThat(game.solution()).isNull();
+    }
+
+    @Test
+    void missingStaleAndSolvedChallengesCannotBeRevealed() {
+        var game = new CraftingSession();
+        assertThatThrownBy(() -> service.reveal(game, "missing")).isInstanceOf(IllegalStateException.class);
+        game.start(stickChallenge("current"));
+        assertThatThrownBy(() -> service.reveal(game, "old")).isInstanceOf(IllegalStateException.class);
+        assertThat(game.status()).isEqualTo(CraftingSession.Status.ACTIVE);
+        service.attempt(game, "current", stickGrid());
+        assertThatThrownBy(() -> service.reveal(game, "current")).isInstanceOf(IllegalStateException.class);
+        assertThat(game.status()).isEqualTo(CraftingSession.Status.SOLVED);
     }
 
     private static ArrayList<String> blank() {

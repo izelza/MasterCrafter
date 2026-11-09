@@ -6,12 +6,13 @@ import java.util.List;
 
 /** En spelares crafting-status. Oberoende av HTTP och Spring. */
 public class CraftingSession {
-    public enum Status { NOT_STARTED, ACTIVE, SOLVED }
+    public enum Status { NOT_STARTED, ACTIVE, SOLVED, REVEALED }
 
     private Challenge challenge;
     private Status status = Status.NOT_STARTED;
     private List<String> lastGrid;
     private AttemptResult lastResult;
+    private Solution solution;
 
     public Challenge challenge() {
         return challenge;
@@ -26,6 +27,7 @@ public class CraftingSession {
         status = Status.ACTIVE;
         lastGrid = null;
         lastResult = null;
+        solution = null;
     }
 
     AttemptResult resultFor(List<String> grid) {
@@ -39,6 +41,18 @@ public class CraftingSession {
         if (result.correct()) status = Status.SOLVED;
     }
 
+    public Solution solution() {
+        return solution;
+    }
+
+    void reveal(Solution solution) {
+        this.solution = solution;
+        status = Status.REVEALED;
+        lastGrid = null;
+        lastResult = null;
+    }
+
     public record Challenge(String id, ItemCatalog.Item target) {}
     public record AttemptResult(boolean correct, String message) {}
+    public record Solution(String challengeId, List<ItemCatalog.Item> grid, String message) {}
 }

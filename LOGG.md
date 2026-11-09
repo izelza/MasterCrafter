@@ -85,3 +85,14 @@
 
 ## 2026-11-09 – Frontendens hanterbarhet
 - Magnus bad att frontend också ska delas upp i fler filer när det behövs för begriplighet och underhåll. Noterade detta som en löpande utvecklingsprincip i BESLUT.md. Ingen kodändring gjordes i detta steg.
+
+## 2026-11-09 – Skip visar facit före nästa recept
+- Oscar bekräftade att ikonen följer muspekaren korrekt och att tidigare invändning mot vissa craftbara föremål var ett misstag. Uppdelningsrecept behålls enligt resursfilerna.
+- Oscar önskade två steg för Skip recipe: första klicket visar rätt recept, andra klicket ger en ny utmaning. Craft! ska vara spärrad när facit visas.
+- Lade till POST /api/crafting/challenges/{challengeId}/solution i den tunna controllern. CraftingService väljer ett befintligt recept och använder CraftingRecipe.exampleGrid för att konkretisera taggar/alternativ till nio rutor.
+- CraftingSession har nu REVEALED och sparar facit för säkra upprepade hämtningar. Backend avvisar försök efter avslöjat facit, även om ett tidigare felaktigt försök finns i cachen. Ny utmaning rensar facit/status. Övriga endpoints och svar behåller sina format.
+- Frontend visar facit med markerade gridrutor, spärrad grid/Craft!/Clear grid och knappen Next recipe. Ett andra klick byter utmaning och återställer griden samt handen. Ett misslyckat reveal-anrop kan försöka hämtas igen utan att oavsiktligt låsa upp crafting.
+- Delade frontend enligt Magnus princip: crafting-input.js ansvarar för pekarikon och mus/tangentbord/touch; crafting.js ansvarar för spel/inventory/API. Använder inbyggda JavaScript-moduler utan nya verktyg eller beroenden.
+- Nitton automatiska tester passerar. Alla 1 026 recept kontrolleras även med det konkreta facit som genereras. Nya service- och HTTP-tester verifierar giltigt facit, upprepning, sessioner, spärrade försök, gammal/löst utmaning och återställning.
+- Webbläsartest av den paketerade jar-filen kontrollerade hela befintliga flödet samt tvåklicksskip: samma target vid facit, synliga ingredienser, spärrad Craft!-knapp även vid syntetiskt klick, låst grid vid vänster/högerklick och upplåst ny utmaning vid nästa klick. Även muspekare, dragning, normal automatisk fortsättning och mobilvy passerar. Skärmbild av facit granskades.
+- Testservern stoppades. README.md och BESLUT.md uppdaterades. Nästa steg: Oscar startar om Main och provar Skip recipe följt av Next recipe.

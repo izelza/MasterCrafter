@@ -15,6 +15,7 @@ main { display: block; width: min(1160px, 100%); margin: auto; padding: 28px 24p
 .grid-cell img { width: 48px; height: 48px; image-rendering: pixelated; pointer-events: none; }
 .grid-cell:hover:enabled { background: #36533b; }
 .grid-cell:disabled { cursor: default; }
+.craft-grid.is-solution .grid-cell { border-color: #d4bb76; opacity: 1; }
 .held-item-layer { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 1000; }
 .held-item { position: absolute; width: 32px; height: 32px; transform: translate(-50%, -50%); image-rendering: pixelated; pointer-events: none; filter: drop-shadow(2px 3px 2px #0008); }
 .hint { color: #b2c3b1; font-size: .8rem; line-height: 1.5; margin: 12px 0; }

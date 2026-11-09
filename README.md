@@ -9,7 +9,7 @@
 
 Spelet har engelska föremålsnamn och engelskt gränssnitt. Sök fram och välj en ingrediens; ikonens mitt följer muspekaren. Högerklicka i crafting-griden för att placera den eller håll höger musknapp nere och dra för att fylla flera rutor. Vänsterklicka eller vänsterdra för att sudda, även när du håller i ett föremål. Högerknappen gör inget när handen är tom.
 
-Klicka på **Craft!** för att låta servern kontrollera receptet. Vid fel kan du ändra griden och försöka igen. Vid rätt hämtas nästa recept direkt; bekräftelsen ligger kvar tills du börjar nästa försök. Handen och griden töms vid varje nytt recept, även när du använder **Skip recipe**. Inventory-sökningen behålls.
+Klicka på **Craft!** för att låta servern kontrollera receptet. Vid fel kan du ändra griden och försöka igen. Vid rätt hämtas nästa recept direkt; bekräftelsen ligger kvar tills du börjar nästa försök. **Skip recipe** visar först ett korrekt recept i griden. Då låses griden och Craft!-knappen, och knappen byter namn till **Next recipe**. Klicka igen för att hämta ett nytt recept. Handen och griden töms vid varje nytt recept. Inventory-sökningen behålls.
 
 **Drop item** släpper föremålet du håller i och **Clear grid** tömmer griden. Med tangentbord kan du använda Enter/Space på en ruta för att placera, eller Delete/Backspace för att sudda. Listan kan sökas med engelska namn (t.ex. **oak planks**) och bläddras i; alla tillgängliga föremål går att välja.
 
@@ -37,6 +37,7 @@ Maven Wrapper hämtar Maven automatiskt första gången. Internet behövs även 
 - `GET /api/items?q=oak%20planks&page=0` söker bland ingredienser och ger `{items, total, page, pages}` med högst 48 föremål per sida. Sidnummer börjar på noll.
 - `POST /api/crafting/challenges` skapar en utmaning och ger `{id, target: {id, name, iconUrl}}`.
 - `POST /api/crafting/attempts` tar emot `{challengeId, grid}` där `grid` är nio item-ID:n eller `null` för tomma rutor, rad för rad. Ger `{correct, message}`. Försök kan upprepas; en ny utmaning ersätter den tidigare i samma webbläsarsession.
+- `POST /api/crafting/challenges/{challengeId}/solution` avslöjar ett giltigt facit för aktuell utmaning och ger `{challengeId, grid, message}`. Griden innehåller nio fullständiga item-objekt eller `null`. Upprepad hämtning ger samma facit. Försök efter avslöjat facit avvisas med HTTP 409 tills en ny utmaning har skapats.
 - Servern accepterar alla medföljande recept för målföremålet, ingrediensalternativ och taggar. Formade recept får flyttas och spegelvändas vågrätt, men inte roteras. Formlösa recept kontrolleras oberoende av rutornas placering, med rätt antal av varje ingrediens.
 - Målföremål väljs enbart bland crafting-receptens resultat, inte bland alla föremål i inventoryt. Även uppdelningsrecept räknas: ett Slime Block i valfri ruta ger nio Slimeballs enligt de medföljande Minecraft-recepten.
 - `POST /api/quiz/questions` ger `{id, iconUrl, options: [{id, name}, ...]}`.
@@ -51,7 +52,11 @@ Kör tester med `.\mvnw.cmd test`.
 
 - `CraftingController` tar emot HTTP-anrop, kopplar dem till rätt webbläsarsession och översätter fel till befintliga HTTP-statuskoder.
 - `CraftingService` väljer målföremål, hanterar sökning/sidindelning och bedömer spelarens försök. Den arbetar med en spelmodell och använder inte HTTP-sessioner.
-- `CraftingSession` är en vanlig Java-klass för en spelares aktuella utmaning, status (`NOT_STARTED`, `ACTIVE`, `SOLVED`) och senaste försöksresultat. Ett identiskt inskickat försök ger samma resultat igen. En löst utmaning kan inte ändras med ett nytt försök; en ny utmaning återställer statusen.
+- `CraftingSession` är en vanlig Java-klass för en spelares aktuella utmaning, status (`NOT_STARTED`, `ACTIVE`, `SOLVED`, `REVEALED`), senaste försöksresultat och eventuellt avslöjat facit. Ett identiskt inskickat försök ger samma resultat igen så länge facit inte avslöjats. En löst eller avslöjad utmaning kan inte ändras med ett nytt försök; en ny utmaning återställer statusen.
 - `ItemCatalog` och `RecipeCatalog` läser Minecraft-data. `CraftingRecipe` kontrollerar om griden matchar ett recept.
 
 Varje webbläsarsession får en egen `CraftingSession`. Servicen är gemensam, men delar inga spelares framsteg. `CraftingServiceTest` demonstrerar testning av spellogiken utan att starta HTTP eller Spring.
+
+## Frontend
+
+`src/main/resources/static` innehåller vanlig HTML/CSS/JavaScript. `crafting.js` styr spelvyn, inventory och API-anrop; `crafting-input.js` hanterar muspekare, dragning, tangentbord och touch. De laddas som JavaScript-moduler utan npm eller separat byggsteg. Facit hämtas från backend och beräknas inte i frontend.
