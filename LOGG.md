@@ -132,3 +132,11 @@
 
 ## 2026-11-09 – Nytt praktiskt push-test
 - Magnus bad om en liten README-ändring och en ny commit/push för att kontrollera terminalens Git-inloggning. Lade till en länk till projektets GitHub-repository och testar push med den lokala Git Credential Manager-inloggningen.
+
+## 2026-11-09 – Minecraft-font i gränssnittet
+- Oscar gillade inventory-färgerna och önskade Minecraft-font om det var rimligt att ordna.
+- Kontrollerade den lokala Java-klienten: dess standardfont refererar till bitmap-resurser. Hittade därefter Mojangs färdiga Minecraft Seven v2-webbfont och verifierade att Mojangs egen CSS registrerar den som MinecraftSeven-v2.
+- Sparade den oförändrade WOFF2-filen lokalt (14 060 byte). Registrerade den i minecraft-font.css, lade till font-preload och aktiverade den i crafting och quiz, inklusive knappar, sökfält och föremålsetiketter. Inga nya ramverk eller beroenden infördes.
+- Tog bort negativ bokstavsspärning från rubrik/logotyp och stängde av syntetisk fetstil för att hålla pixelbokstäverna tydliga. Ökade de minsta inventoryetiketterna till 12 CSS-pixlar.
+- Maven-paketering och båda webbläsartesterna passerar. Kontrollerade via webbläsarens faktiska fontval att engelsk text, siffror och ÅÄÖåäö renderas med Minecraft Seven v2 som custom font utan reservfont. Muskontroller, native cursor, facit, automatisk fortsättning, quiz och mobilvy fungerar fortsatt; inga JavaScript-fel eller horisontella överflöden.
+- Granskade desktop- och mobilskärmbilder. Testservern stoppades. Fontkälla och SHA-256 finns i docs/MINECRAFT-FONT.md; README.md och BESLUT.md är uppdaterade. Ändringen committas och pushas enligt Magnus regel.

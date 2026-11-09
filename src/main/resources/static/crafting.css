@@ -35,7 +35,7 @@ input:focus-visible { outline: 2px solid var(--mc-outline); outline-offset: 3px;
 .inventory { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; max-height: 348px; overflow-y: auto; padding: 5px; margin: -5px; scrollbar-color: var(--mc-slot) var(--mc-panel); }
 .inventory-item { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 9px 3px 6px; min-width: 0; background: var(--mc-slot); color: var(--mc-outline); border: 3px solid var(--mc-inset-shadow); border-image: var(--mc-slot-texture) 1 fill / 3px / 0 stretch; border-radius: 0; image-rendering: pixelated; }
 .inventory-item img { width: 32px; height: 32px; image-rendering: pixelated; }
-.inventory-item span { font-size: .65rem; line-height: 1.2; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.inventory-item span { font-size: .75rem; line-height: 1.3; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .inventory-item:hover { outline: 2px solid var(--mc-highlight); outline-offset: -4px; }
 .inventory-item[aria-pressed="true"] { outline: 3px solid var(--mc-outline); outline-offset: -3px; }
 .pagination { display: flex; align-items: center; justify-content: space-between; margin-top: 18px; gap: 8px; font-size: .8rem; }

@@ -1,0 +1,8 @@
+/* Mojang's Minecraft Seven V2 webfont, self-hosted. See docs/MINECRAFT-FONT.md. */
+@font-face {
+    font-family: 'Minecraft Seven';
+    src: url('/fonts/Minecraft-Seven_v2.woff2') format('woff2');
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+}
