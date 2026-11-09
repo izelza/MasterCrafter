@@ -46,3 +46,12 @@ Maven Wrapper hämtar Maven automatiskt första gången. Internet behövs även 
 Minecraft-data och båda ikonformaten läses från `mc-resources/resources` och paketeras i appen vid Maven-bygget. Kör Reload All Maven Projects efter ändringar av `pom.xml`.
 
 Kör tester med `.\mvnw.cmd test`.
+
+## Backendens ansvarsfördelning
+
+- `CraftingController` tar emot HTTP-anrop, kopplar dem till rätt webbläsarsession och översätter fel till befintliga HTTP-statuskoder.
+- `CraftingService` väljer målföremål, hanterar sökning/sidindelning och bedömer spelarens försök. Den arbetar med en spelmodell och använder inte HTTP-sessioner.
+- `CraftingSession` är en vanlig Java-klass för en spelares aktuella utmaning, status (`NOT_STARTED`, `ACTIVE`, `SOLVED`) och senaste försöksresultat. Ett identiskt inskickat försök ger samma resultat igen. En löst utmaning kan inte ändras med ett nytt försök; en ny utmaning återställer statusen.
+- `ItemCatalog` och `RecipeCatalog` läser Minecraft-data. `CraftingRecipe` kontrollerar om griden matchar ett recept.
+
+Varje webbläsarsession får en egen `CraftingSession`. Servicen är gemensam, men delar inga spelares framsteg. `CraftingServiceTest` demonstrerar testning av spellogiken utan att starta HTTP eller Spring.

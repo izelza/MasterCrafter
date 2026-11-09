@@ -71,3 +71,14 @@
 - Alla tretton automatiska tester passerar. Webbläsartest verifierade ikonens exakta mitt vid pekaren, även efter rullning, klickgenomsläpp, fasta musknappar, automatisk fortsättning och tom hand efter nästa recept. Även mobilvyn och kontrollen av horisontell scroll passerar.
 - En start av testservern fastnade i automatisk tillståndskontroll och nådde dess tidsgräns. Ett nytt startförsök fungerade och kontrollerna kunde slutföras. Testservern stoppades efteråt.
 - Uppdaterade BESLUT.md och README.md med den verifierade skillnaden mellan inventory och målföremål samt exemplet med Slimeballs.
+
+## 2026-11-09 – Tunn controller och tydlig spelmodell
+- Magnus bad om genomförande av förslag 1 (tunn controller/service) och 4 (tydlig spelarstatus). Han avböjde förslag 2 (nästa utmaning i samma API-svar) och 3 (nya DTO/felkontrakt/Bean Validation).
+- Flyttade målval, inventory-sökning/sidindelning, bedömning och hantering av spelstatus till CraftingService. Servicen använder inte HttpSession eller HTTP-statuskoder.
+- CraftingController ansvarar nu för HTTP-anrop, befintliga felstatuskoder och att hämta/skapa spelarens CraftingSession i webbläsarsessionen.
+- Lade till CraftingSession som vanlig Java-modell med aktuell utmaning, NOT_STARTED/ACTIVE/SOLVED, en skyddad kopia av senaste griden och senaste resultatet. Separata webbläsarsessioner har egna spelmodeller.
+- Identiska inskickningar ger samma sparade resultat igen. Felaktiga försök lämnar utmaningen aktiv. Efter rätt svar är utmaningen löst; ett annat försök kan inte ändra den och ger befintlig 409-status. Ny utmaning återställer modellens försöksstatus. Service-operationer låses per spelmodell vid samtidiga anrop.
+- Endpoints, JSON-format och frontend är oförändrade. Ingen ny infrastruktur eller nya beroenden infördes. Automatiskt nästa recept ligger kvar i frontend enligt Magnus avgränsning.
+- Lade till tre rena servicetester utan Spring eller HTTP: livscykel/upprepningar, kopiering av grid och återställning samt separata spelares framsteg. Utökade HTTP-testet för att säkerställa att ändrade försök efter lösning avvisas.
+- Alla sexton automatiska tester och Maven-paketering passerar. Den byggda jar-filen provades i webbläsare på port 8081 med inventory, musknappar/dragning, cursorikon, fel/rätt försök, automatisk fortsättning, tom hand inför nästa recept och mobilvy. Testservern stoppades efteråt.
+- README.md beskriver ansvarsfördelningen för pedagogisk genomgång med Oscar. BESLUT.md dokumenterar Magnus avgränsning. Redo för fortsatt arbete med Oscar efter omstart av Main.

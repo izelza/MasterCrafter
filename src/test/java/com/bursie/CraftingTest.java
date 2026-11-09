@@ -156,6 +156,7 @@ class CraftingTest {
         var recipe = recipes.recipesFor(challenge.at("/target/id").asText()).getFirst();
         mvc.perform(attempt(challenge, example(recipe)).session(session))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.correct").value(true));
+        mvc.perform(attempt(challenge, blank()).session(session)).andExpect(status().isConflict());
         // Samma HTTP-försök kan upprepas om svaret försvann på nätverket.
         mvc.perform(attempt(challenge, example(recipe)).session(session))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.correct").value(true));
