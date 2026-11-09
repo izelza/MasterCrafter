@@ -115,9 +115,7 @@ async function loadItems(requestedPage = 0) {
             button.title = item.name;
             button.setAttribute('aria-label', item.name);
             button.setAttribute('aria-pressed', String(selected?.id === item.id));
-            const name = document.createElement('span');
-            name.textContent = item.name;
-            button.append(icon(item), name);
+            button.append(icon(item));
             button.addEventListener('click', () => selectItem(item));
             element('inventory').append(button);
         }

@@ -1,3 +1,4 @@
+:root { --mc-slot-size: 72px; }
 main { display: block; width: min(1160px, 100%); margin: auto; padding: 28px 24px; }
 .crafting-heading { margin-bottom: 24px; }
 .crafting-heading h1 { font-size: clamp(1.7rem, 5vw, 2.4rem); }
@@ -10,13 +11,14 @@ main { display: block; width: min(1160px, 100%); margin: auto; padding: 28px 24p
 .target img { width: 56px; height: 56px; image-rendering: pixelated; object-fit: contain; }
 .target p { color: var(--mc-outline); margin: 0 0 4px; font-size: .8rem; }
 .target strong { font-size: 1.15rem; overflow-wrap: anywhere; }
-.craft-grid { display: grid; grid-template-columns: repeat(3, 72px); gap: 5px; justify-content: center; margin: 24px 0 16px; user-select: none; }
-.grid-cell { --slot-pixel: 4px; position: relative; isolation: isolate; height: 72px; padding: 8px; display: grid; place-items: center; background: var(--mc-slot); border: var(--slot-pixel) solid var(--mc-inset-shadow); border-image: var(--mc-slot-texture) 1 fill / var(--slot-pixel) / 0 stretch; image-rendering: pixelated; }
-.grid-cell img { position: relative; z-index: 1; width: 48px; height: 48px; image-rendering: pixelated; pointer-events: none; }
+.craft-grid { display: grid; grid-template-columns: repeat(3, var(--mc-slot-size)); gap: 5px; justify-content: center; margin: 24px 0 16px; user-select: none; }
+.grid-cell, .inventory-item { --slot-pixel: 4px; position: relative; isolation: isolate; width: var(--mc-slot-size); height: var(--mc-slot-size); padding: 8px; display: grid; place-items: center; background: var(--mc-slot); color: var(--mc-outline); border: var(--slot-pixel) solid var(--mc-inset-shadow); border-image: var(--mc-slot-texture) 1 fill / var(--slot-pixel) / 0 stretch; border-radius: 0; image-rendering: pixelated; }
+.grid-cell img, .inventory-item img { position: relative; z-index: 1; width: 48px; height: 48px; image-rendering: pixelated; pointer-events: none; }
 /* Vanilla sprites: 24x24 with 4 transparent pixels around the 16x16 highlight.
    At our 4x scale the 96x96 layers cover exactly the 64x64 slot interior.
    The existing 4px bevel stays untouched. See docs/MINECRAFT-HOVER.md. */
-.grid-cell::before, .grid-cell::after {
+.grid-cell::before, .grid-cell::after,
+.inventory-item::before, .inventory-item::after {
     content: '';
     position: absolute;
     inset: calc(-4 * var(--slot-pixel));
@@ -26,10 +28,12 @@ main { display: block; width: min(1160px, 100%); margin: auto; padding: 28px 24p
     pointer-events: none;
     opacity: 0;
 }
-.grid-cell::before { background-image: var(--mc-slot-highlight-back); z-index: 0; }
-.grid-cell::after { background-image: var(--mc-slot-highlight-front); z-index: 2; }
+.grid-cell::before, .inventory-item::before { background-image: var(--mc-slot-highlight-back); z-index: 0; }
+.grid-cell::after, .inventory-item::after { background-image: var(--mc-slot-highlight-front); z-index: 2; }
 .grid-cell:is(:hover, :focus-visible):enabled::before,
-.grid-cell:is(:hover, :focus-visible):enabled::after { opacity: 1; }
+.grid-cell:is(:hover, :focus-visible):enabled::after,
+.inventory-item:is(:hover, :focus-visible)::before,
+.inventory-item:is(:hover, :focus-visible)::after { opacity: 1; }
 /* Grid focus uses the same lightened interior as hover, never a white frame. */
 .grid-cell:focus-visible, .inventory-item:focus-visible { outline: none; box-shadow: none; }
 .grid-cell:disabled { cursor: default; }
@@ -50,37 +54,17 @@ input[type="search"] { width: 100%; min-width: 0; border: 2px solid var(--mc-ins
 input[type="search"]::placeholder { color: var(--mc-outline); opacity: 1; }
 input:focus-visible { outline: 2px solid var(--mc-outline); outline-offset: 3px; }
 .inventory-status { font-size: .8rem; color: var(--mc-inset-shadow); min-height: 1.5em; margin: 14px 0 10px; }
-.inventory { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; max-height: 348px; overflow-y: auto; padding: 5px; margin: -5px; scrollbar-color: var(--mc-slot) var(--mc-panel); }
-.inventory-item { position: relative; isolation: isolate; display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 9px 3px 6px; min-width: 0; background: var(--mc-slot); color: var(--mc-outline); border: 3px solid var(--mc-inset-shadow); border-image: var(--mc-slot-texture) 1 fill / 3px / 0 stretch; border-radius: 0; image-rendering: pixelated; }
-.inventory-item img { position: relative; z-index: 1; width: 32px; height: 32px; image-rendering: pixelated; }
-.inventory-item span { position: relative; z-index: 1; font-size: .75rem; line-height: 1.3; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-/* Crop the sprites' transparent margins so rectangular inventory tiles are
-   highlighted to their inner edges too, without painting over the bevel. */
-.inventory-item::before, .inventory-item::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-size: 150% 150%;
-    background-position: center;
-    image-rendering: pixelated;
-    pointer-events: none;
-    opacity: 0;
-}
-.inventory-item::before { background-image: var(--mc-slot-highlight-back); z-index: 0; }
-.inventory-item::after { background-image: var(--mc-slot-highlight-front); z-index: 2; }
-.inventory-item:is(:hover, :focus-visible)::before,
-.inventory-item:is(:hover, :focus-visible)::after { opacity: 1; }
+.inventory { display: grid; grid-template-columns: repeat(auto-fill, var(--mc-slot-size)); gap: 5px; max-height: 348px; overflow-y: auto; padding: 5px; margin: -5px; scrollbar-color: var(--mc-slot) var(--mc-panel); }
 .inventory-item[aria-pressed="true"] { outline: 3px solid var(--mc-outline); outline-offset: -3px; }
 .pagination { display: flex; align-items: center; justify-content: space-between; margin-top: 18px; gap: 8px; font-size: .8rem; }
 #page-label { color: var(--mc-inset-shadow); }
 @media (max-width: 900px) {
     .crafting-layout { grid-template-columns: minmax(280px, .9fr) minmax(0, 1fr); gap: 16px; }
     .panel { padding: 18px; }
-    .inventory { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 @media (max-width: 650px) {
     main { padding: 20px 16px; }
     .crafting-layout { grid-template-columns: 1fr; }
-    .inventory { grid-template-columns: repeat(5, minmax(0, 1fr)); max-height: 270px; }
+    .inventory { max-height: 270px; }
     .crafting-heading .intro { font-size: .9rem; }
 }

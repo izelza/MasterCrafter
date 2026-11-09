@@ -13,7 +13,7 @@ Spelet har engelska föremålsnamn och engelskt gränssnitt. Sök fram och välj
 
 Klicka på **Craft!** för att låta servern kontrollera receptet. Vid fel kan du ändra griden och försöka igen. Vid rätt hämtas nästa recept direkt; bekräftelsen ligger kvar tills du börjar nästa försök. **Skip recipe** visar först ett korrekt recept i griden. Då låses griden och Craft!-knappen, och knappen byter namn till **Next recipe**. Klicka igen för att hämta ett nytt recept. Handen och griden töms vid varje nytt recept. Inventory-sökningen behålls.
 
-**Drop item** släpper föremålet du håller i och **Clear grid** tömmer griden. Med tangentbord kan du använda Enter/Space på en ruta för att placera, eller Delete/Backspace för att sudda. Listan kan sökas med engelska namn (t.ex. **oak planks**) och bläddras i; alla tillgängliga föremål går att välja.
+**Drop item** släpper föremålet du håller i och **Clear grid** tömmer griden. Med tangentbord kan du använda Enter/Space på en ruta för att placera, eller Delete/Backspace för att sudda. Listan kan sökas med engelska namn (t.ex. **oak planks**) och bläddras i; alla tillgängliga föremål går att välja. Inventory-rutorna är kvadratiska med samma storlek och utseende som crafting-rutorna. Håll musen över en ikon för att se itemnamnet.
 
 Frågespelet finns kvar via länken **Item quiz** eller http://localhost:8080/quiz.html. Stoppa servern med IntelliJs stoppknapp.
 

@@ -29,10 +29,11 @@ redigerbar ruta hovras eller har tangentbordsfokus. Fokus använder samma
 ljusning utan vit outline eller extra box-shadow. Inte heller facit får en vit
 ram runt varje ruta.
 
-Inventory-rutorna använder samma bak-/framlager utan vit hover-ram. Deras
-rektangulära insidor täcks genom att centrera texturerna i 150 procent av
-ytans storlek: då beskärs den transparenta tredjedelen runt den vita mitten.
-Den befintliga svarta markeringen för vald ingrediens behålls.
+Inventory och crafting-grid delar samma CSS för kvadratiska rutor på 72×72,
+fyrpixlars kanter, 48×48-ikoner och bak-/framlager utan vit hover-ram.
+Inventoryts kolumner anpassas efter utrymmet utan att rutorna sträcks.
+Itemnamnet visas vid hover och finns som tillgängligt namn för skärmläsare;
+texten tar ingen plats inne i rutan. Den svarta markeringen för vald ingrediens behålls.
 
 Webbläsarens skärmbild verifierades med pixelprover: tom markerad insida
 blev `#C0C0C0` av originalens två alfalager över `#8B8B8B`. Skuggkanten
