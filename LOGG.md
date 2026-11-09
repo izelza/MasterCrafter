@@ -61,3 +61,13 @@
 - Alla tolv automatiska tester passerar. Webbläsartest med riktiga mus-events verifierade ikonens följning och klickgenomsläpp, inga överflöden vid fönsterkant, vänster/höger-klick och dragning med valt föremål, vänstersuddning med tom hand, oförändrad grid vid högerdrag utan valt föremål, släpp utanför griden, fokusförlust, fel/rätt försök och tömd hand vid både automatisk fortsättning och Skip recipe. Desktop-skärmbild granskades.
 - Vid sista paketeringen var testserverns jar-fil låst av Windows. Stoppade testservern och byggde om paketet utan att köra om redan godkända tester; bygget lyckades.
 - Uppdaterade BESLUT.md och README.md enligt de nya kontrollerna. Nästa steg: starta om Main och låt Oscar testa känslan med ikonen och båda musknapparna.
+
+## 2026-11-09 – Centrerad ikon och kontroll av målurval
+- Oscar rapporterade att vald ikon låg för långt från muspekaren och att Slimeball verkade vara ett omöjligt målföremål.
+- Hittade den avsiktliga förskjutningen i cursor-koden: ikonens övre vänstra hörn låg 12 pixlar nedåt/höger, vilket gav cirka 28 pixlars avstånd till ikonens mitt. Tog bort förskjutningen och centrerade ikonen direkt vid pekarens koordinater. Ett fast, klickgenomsläppligt lager klipper ikonen vid fönsterkanten utan att flytta den eller skapa horisontell scroll.
+- Granskade CraftingController och RecipeCatalog: slumpningen använder redan enbart receptresultat, inte hela inventoryt. Slimeball har ett giltigt medföljande crafting_shapeless-recept: ett minecraft:slime_block ger nio minecraft:slime_ball. Informerade Oscar om detta.
+- Frågade om uppdelningsrecept ska ingå eller om föremål som bara fås genom uppdelning av block ska uteslutas. Inget svar hade kommit när ändringen sparades; nuvarande urval med alla giltiga crafting-recept behålls tills Oscar väljer.
+- Lade till regressionstest som kontrollerar att varje möjligt mål har ett accepterat recept, att ett föremål utan crafting-recept (Apple) inte är ett mål, och att Slime Block i en valfri ruta godkänns som Slimeball-recept.
+- Alla tretton automatiska tester passerar. Webbläsartest verifierade ikonens exakta mitt vid pekaren, även efter rullning, klickgenomsläpp, fasta musknappar, automatisk fortsättning och tom hand efter nästa recept. Även mobilvyn och kontrollen av horisontell scroll passerar.
+- En start av testservern fastnade i automatisk tillståndskontroll och nådde dess tidsgräns. Ett nytt startförsök fungerade och kontrollerna kunde slutföras. Testservern stoppades efteråt.
+- Uppdaterade BESLUT.md och README.md med den verifierade skillnaden mellan inventory och målföremål samt exemplet med Slimeballs.

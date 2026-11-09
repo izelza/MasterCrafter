@@ -7,7 +7,7 @@
 3. Kör `com.bursie.Main` med den gröna pilen vid `main`.
 4. Öppna http://localhost:8080 i webbläsaren för att spela crafting-spelet.
 
-Spelet har engelska föremålsnamn och engelskt gränssnitt. Sök fram och välj en ingrediens; dess ikon följer muspekaren. Högerklicka i crafting-griden för att placera den eller håll höger musknapp nere och dra för att fylla flera rutor. Vänsterklicka eller vänsterdra för att sudda, även när du håller i ett föremål. Högerknappen gör inget när handen är tom.
+Spelet har engelska föremålsnamn och engelskt gränssnitt. Sök fram och välj en ingrediens; ikonens mitt följer muspekaren. Högerklicka i crafting-griden för att placera den eller håll höger musknapp nere och dra för att fylla flera rutor. Vänsterklicka eller vänsterdra för att sudda, även när du håller i ett föremål. Högerknappen gör inget när handen är tom.
 
 Klicka på **Craft!** för att låta servern kontrollera receptet. Vid fel kan du ändra griden och försöka igen. Vid rätt hämtas nästa recept direkt; bekräftelsen ligger kvar tills du börjar nästa försök. Handen och griden töms vid varje nytt recept, även när du använder **Skip recipe**. Inventory-sökningen behålls.
 
@@ -38,6 +38,7 @@ Maven Wrapper hämtar Maven automatiskt första gången. Internet behövs även 
 - `POST /api/crafting/challenges` skapar en utmaning och ger `{id, target: {id, name, iconUrl}}`.
 - `POST /api/crafting/attempts` tar emot `{challengeId, grid}` där `grid` är nio item-ID:n eller `null` för tomma rutor, rad för rad. Ger `{correct, message}`. Försök kan upprepas; en ny utmaning ersätter den tidigare i samma webbläsarsession.
 - Servern accepterar alla medföljande recept för målföremålet, ingrediensalternativ och taggar. Formade recept får flyttas och spegelvändas vågrätt, men inte roteras. Formlösa recept kontrolleras oberoende av rutornas placering, med rätt antal av varje ingrediens.
+- Målföremål väljs enbart bland crafting-receptens resultat, inte bland alla föremål i inventoryt. Även uppdelningsrecept räknas: ett Slime Block i valfri ruta ger nio Slimeballs enligt de medföljande Minecraft-recepten.
 - `POST /api/quiz/questions` ger `{id, iconUrl, options: [{id, name}, ...]}`.
 - `POST /api/quiz/answers` tar emot `{questionId, optionId}` och ger `{correct, correctName, correctOptionId}`.
 - Webbläsaren skickar automatiskt en sessionscookie så att servern vet vilken utmaning eller quizfråga spelaren har. En quizfråga kan bara besvaras en gång. En ny quizfråga ersätter den tidigare, även om flera flikar är öppna. Quiz och crafting har separata utmaningar.

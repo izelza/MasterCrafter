@@ -65,6 +65,19 @@ class CraftingTest {
     }
 
     @Test
+    void targetsAreRecipeResultsAndSlimeballsCanBeUnpackedFromSlimeBlocks() {
+        assertThat(recipes.targetIds()).doesNotContain("minecraft:apple");
+        for (String target : recipes.targetIds()) {
+            assertThat(recipes.recipesFor(target)).as(target).isNotEmpty();
+            assertThat(recipes.recipesFor(target).stream().anyMatch(recipe -> recipes.matches(target, example(recipe))))
+                    .as("craftable target %s", target).isTrue();
+        }
+        var grid = blank();
+        grid.set(4, "minecraft:slime_block");
+        assertThat(recipes.matches("minecraft:slime_ball", grid)).isTrue();
+    }
+
+    @Test
     void shapedRecipeAcceptsTagsButRejectsExtraItemsMissingItemsAndRotations() {
         var grid = Arrays.asList(
                 "minecraft:oak_planks", "minecraft:birch_planks", "minecraft:spruce_planks",

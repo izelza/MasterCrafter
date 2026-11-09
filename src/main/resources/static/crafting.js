@@ -16,8 +16,8 @@ let pointerPosition = null;
 function updateHeldIcon() {
     heldIcon.hidden = !selected || !pointerPosition;
     if (heldIcon.hidden) return;
-    heldIcon.style.left = `${Math.min(pointerPosition.x + 12, Math.max(0, window.innerWidth - 36))}px`;
-    heldIcon.style.top = `${Math.min(pointerPosition.y + 12, Math.max(0, window.innerHeight - 36))}px`;
+    heldIcon.style.left = `${pointerPosition.x}px`;
+    heldIcon.style.top = `${pointerPosition.y}px`;
 }
 
 function trackPointer(event) {
