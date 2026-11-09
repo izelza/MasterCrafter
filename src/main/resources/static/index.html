@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="sv">
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,57 +12,57 @@
 <body>
     <header class="site-header">
         <a class="brand" href="/">MASTER<span>CRAFTER</span></a>
-        <nav class="mode-nav" aria-label="Spelläge"><a href="/" aria-current="page">Crafting</a><a href="/quiz.html">Frågespel</a></nav>
+        <nav class="mode-nav" aria-label="Game mode"><a href="/" aria-current="page">Crafting</a><a href="/quiz.html">Item quiz</a></nav>
     </header>
     <main>
         <div class="crafting-heading">
-            <p class="eyebrow">FRÅN INGREDIENS TILL FÖREMÅL</p>
-            <h1>Dags att crafta.</h1>
-            <p class="intro">Välj en ingrediens. Placera den i rutorna. Kan du receptet?</p>
+            <p class="eyebrow">FROM INGREDIENT TO ITEM</p>
+            <h1>Time to craft.</h1>
+            <p class="intro">Choose an ingredient. Fill the grid. Do you know the recipe?</p>
         </div>
         <div class="crafting-layout">
             <section class="panel" aria-labelledby="craft-title">
-                <div class="panel-header"><h2 id="craft-title">Craftingbord</h2><small>3 × 3</small></div>
+                <div class="panel-header"><h2 id="craft-title">Crafting table</h2><small>3 × 3</small></div>
                 <div class="target">
                     <img id="target-icon" alt="" width="56" height="56" hidden>
-                    <div><p>Du ska tillverka</p><strong id="target-name">Hämtar recept…</strong></div>
+                    <div><p>Your target item</p><strong id="target-name">Loading recipe…</strong></div>
                 </div>
-                <div id="craft-grid" class="craft-grid" role="group" aria-label="Crafting-grid, tre rader och tre kolumner"></div>
+                <div id="craft-grid" class="craft-grid" role="group" aria-label="Crafting grid, three rows and three columns"></div>
                 <div class="tools">
-                    <button id="eraser" type="button" class="secondary" aria-pressed="true">Sudda</button>
-                    <button id="clear-grid" type="button" class="secondary">Töm griden</button>
+                    <button id="eraser" type="button" class="secondary" aria-pressed="true">Erase</button>
+                    <button id="clear-grid" type="button" class="secondary">Clear grid</button>
                 </div>
-                <p class="hint">Klicka i rutorna för att placera vald ingrediens. Välj Sudda eller högerklicka för att ta bort.</p>
+                <p class="hint">Click a slot to place the selected ingredient. Select Erase or right-click to remove it.</p>
                 <div class="selected-item" aria-live="polite">
                     <img id="selected-icon" alt="" width="32" height="32" hidden>
-                    <span id="selected-name">Välj en ingrediens i listan.</span>
+                    <span id="selected-name">Choose an ingredient from the inventory.</span>
                 </div>
                 <div class="craft-actions">
-                    <button id="craft" type="button" class="next" disabled>Crafta!</button>
-                    <button id="new-recipe" type="button" class="secondary">Hoppa över</button>
+                    <button id="craft" type="button" class="next" disabled>Craft!</button>
+                    <button id="new-recipe" type="button" class="secondary">Skip recipe</button>
                 </div>
-                <p id="craft-feedback" class="feedback" role="status" aria-live="polite">Hämtar recept…</p>
+                <p id="craft-feedback" class="feedback" role="status" aria-live="polite">Loading recipe…</p>
             </section>
             <section class="panel" aria-labelledby="inventory-title">
-                <div class="panel-header"><h2 id="inventory-title">Ingredienser</h2><small>Välj och placera</small></div>
-                <label for="item-search" class="search-label">Sök bland alla föremål</label>
+                <div class="panel-header"><h2 id="inventory-title">Inventory</h2><small>Choose and place</small></div>
+                <label for="item-search" class="search-label">Search all items</label>
                 <div class="search-box">
-                    <input id="item-search" type="search" placeholder="Till exempel ekplankor eller pinne" autocomplete="off" maxlength="100">
-                    <button id="clear-search" type="button" class="secondary">Rensa</button>
+                    <input id="item-search" type="search" placeholder="For example, oak planks or stick" autocomplete="off" maxlength="100">
+                    <button id="clear-search" type="button" class="secondary">Clear</button>
                 </div>
-                <p id="inventory-status" class="inventory-status" role="status" aria-live="polite">Hämtar ingredienser…</p>
-                <button id="retry-items" type="button" class="secondary" hidden>Försök igen</button>
-                <div id="inventory" class="inventory" role="group" aria-label="Tillgängliga ingredienser"></div>
+                <p id="inventory-status" class="inventory-status" role="status" aria-live="polite">Loading ingredients…</p>
+                <button id="retry-items" type="button" class="secondary" hidden>Try again</button>
+                <div id="inventory" class="inventory" role="group" aria-label="Available ingredients"></div>
                 <div class="pagination">
-                    <button id="previous-page" type="button" class="secondary" disabled>← Föregående</button>
+                    <button id="previous-page" type="button" class="secondary" disabled>← Previous</button>
                     <span id="page-label"></span>
-                    <button id="next-page" type="button" class="secondary" disabled>Nästa →</button>
+                    <button id="next-page" type="button" class="secondary" disabled>Next →</button>
                 </div>
-                <p class="hint">Varje val räcker till hur många rutor du vill. Sökningen tar med alla tillgängliga föremål.</p>
+                <p class="hint">Use each ingredient in as many slots as you like. Search includes all available items.</p>
             </section>
         </div>
-        <noscript>Aktivera JavaScript i webbläsaren för att spela.</noscript>
+        <noscript>Enable JavaScript in your browser to play.</noscript>
     </main>
-    <footer>Byggt av Oscar &amp; Codex <span aria-hidden="true">·</span> Ett recept i taget.</footer>
+    <footer>Built by Oscar &amp; Codex <span aria-hidden="true">·</span> One recipe at a time.</footer>
 </body>
 </html>

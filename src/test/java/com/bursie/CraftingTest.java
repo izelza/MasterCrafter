@@ -106,10 +106,18 @@ class CraftingTest {
     }
 
     @Test
-    void inventoryCanSearchSwedishNamesAndBrowseEveryItem() throws Exception {
-        var found = mapper.readTree(mvc.perform(get("/api/items").param("q", "EKPLANKOR"))
+    void inventoryCanSearchEnglishNamesAndBrowseEveryItem() throws Exception {
+        var found = mapper.readTree(mvc.perform(get("/api/items").param("q", "OAK PLANKS"))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsByteArray());
         assertThat(found.get("items").findValuesAsText("id")).contains("minecraft:oak_planks");
+        assertThat(items.find("minecraft:oak_planks").name()).isEqualTo("Oak Planks");
+        JsonNode englishNames;
+        try (var input = new org.springframework.core.io.ClassPathResource("minecraft/lang/en_us.json").getInputStream()) {
+            englishNames = mapper.readTree(input);
+        }
+        for (var item : items.items()) {
+            assertThat(item.name()).as(item.id()).isEqualTo(englishNames.get(item.id()).asText());
+        }
         var seen = new java.util.HashSet<String>();
         int page = 0;
         int pages;

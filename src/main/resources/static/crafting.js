@@ -18,14 +18,14 @@ async function request(url, body) {
             body: JSON.stringify(body)
         });
     } catch {
-        throw new Error('Kunde inte nå spelet. Kontrollera att servern körs och försök igen.');
+        throw new Error('Could not reach the game. Check that the server is running and try again.');
     }
     if (!response.ok) {
         if (response.status === 409) {
             challenge = null;
-            throw new Error('Receptet är inte längre aktivt. Klicka på Nytt recept.');
+            throw new Error('This recipe is no longer active. Click New recipe.');
         }
-        throw new Error('Något gick fel. Prova igen eller hämta ett nytt recept.');
+        throw new Error('Something went wrong. Try again or get a new recipe.');
     }
     return response.json();
 }
@@ -47,7 +47,7 @@ function refreshGrid() {
         const item = grid[index];
         button.replaceChildren();
         if (item) button.append(icon(item));
-        const label = `Rad ${Math.floor(index / 3) + 1}, kolumn ${index % 3 + 1}: ${item?.name ?? 'tom'}`;
+        const label = `Row ${Math.floor(index / 3) + 1}, column ${index % 3 + 1}: ${item?.name ?? 'empty'}`;
         button.setAttribute('aria-label', label);
         button.title = label;
         button.disabled = working || solved || !challenge;
@@ -56,14 +56,14 @@ function refreshGrid() {
     element('clear-grid').disabled = working || solved || !challenge || grid.every(item => !item);
     element('eraser').disabled = working || solved || !challenge;
     element('new-recipe').disabled = working;
-    element('new-recipe').textContent = !challenge ? 'Nytt recept' : solved ? 'Nästa recept →' : 'Hoppa över';
+    element('new-recipe').textContent = !challenge ? 'New recipe' : solved ? 'Next recipe →' : 'Skip recipe';
 }
 
 function changeCell(index, item) {
     if (working || solved || !challenge) return;
     grid[index] = item;
     refreshGrid();
-    feedback('Placera ingredienserna och klicka på Crafta!');
+    feedback('Place your ingredients and click Craft!');
 }
 
 for (let index = 0; index < 9; index++) {
@@ -89,8 +89,8 @@ function selectItem(item) {
     element('selected-icon').hidden = !item;
     if (item) element('selected-icon').src = item.iconUrl;
     element('selected-name').textContent = item
-        ? `Vald: ${item.name}. Klicka i griden för att placera.`
-        : 'Sudda är valt. Klicka på en ruta för att tömma den.';
+        ? `Selected: ${item.name}. Click a slot to place it.`
+        : 'Erase selected. Click a slot to clear it.';
     element('eraser').setAttribute('aria-pressed', String(!item));
     for (const button of element('inventory').children) {
         button.setAttribute('aria-pressed', String(button.dataset.itemId === item?.id));
@@ -99,7 +99,7 @@ function selectItem(item) {
 
 async function loadItems(requestedPage = 0) {
     const version = ++searchVersion;
-    element('inventory-status').textContent = 'Söker ingredienser…';
+    element('inventory-status').textContent = 'Searching for ingredients…';
     element('previous-page').disabled = true;
     element('next-page').disabled = true;
     element('retry-items').hidden = true;
@@ -125,9 +125,9 @@ async function loadItems(requestedPage = 0) {
         }
         element('inventory').scrollTop = 0;
         element('inventory-status').textContent = result.total
-            ? `${result.total.toLocaleString('sv-SE')} föremål. Håll musen över en ikon för att se hela namnet.`
-            : 'Inga föremål hittades. Prova ett annat namn.';
-        element('page-label').textContent = `Sida ${page + 1} av ${pages}`;
+            ? `${result.total.toLocaleString('en-US')} items. Hover over an icon to see its full name.`
+            : 'No items found. Try a different name.';
+        element('page-label').textContent = `Page ${page + 1} of ${pages}`;
         element('previous-page').disabled = page === 0;
         element('next-page').disabled = page + 1 >= pages;
     } catch (error) {
@@ -143,18 +143,18 @@ async function newChallenge() {
     solved = false;
     challenge = null;
     grid.fill(null);
-    element('target-name').textContent = 'Hämtar recept…';
+    element('target-name').textContent = 'Loading recipe…';
     element('target-icon').hidden = true;
-    feedback('Hämtar recept…');
+    feedback('Loading recipe…');
     refreshGrid();
     try {
         challenge = await request('/api/crafting/challenges', {});
         element('target-name').textContent = challenge.target.name;
         element('target-icon').src = challenge.target.iconUrl;
         element('target-icon').hidden = false;
-        feedback('Placera ingredienserna och klicka på Crafta!');
+        feedback('Place your ingredients and click Craft!');
     } catch (error) {
-        element('target-name').textContent = 'Receptet kunde inte hämtas';
+        element('target-name').textContent = 'Could not load the recipe';
         feedback(error.message, 'error');
     } finally {
         working = false;
@@ -166,7 +166,7 @@ async function craft() {
     if (working || solved || !challenge || grid.every(item => !item)) return;
     working = true;
     refreshGrid();
-    feedback('Kontrollerar receptet…');
+    feedback('Checking your recipe…');
     try {
         const result = await request('/api/crafting/attempts', {
             challengeId: challenge.id,
@@ -204,7 +204,7 @@ element('clear-grid').addEventListener('click', () => {
     if (working || solved || !challenge) return;
     grid.fill(null);
     refreshGrid();
-    feedback('Griden är tom. Prova en ny kombination.');
+    feedback('The grid is empty. Try a new combination.');
 });
 element('craft').addEventListener('click', craft);
 element('new-recipe').addEventListener('click', newChallenge);

@@ -24,7 +24,7 @@ public class CraftingController {
 
     @GetMapping("/api/items")
     public ItemPage search(@RequestParam(defaultValue = "") String q, @RequestParam(defaultValue = "0") int page) {
-        if (page < 0) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sidan måste vara minst noll.");
+        if (page < 0) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Page must be zero or greater.");
         var matches = items.search(q);
         int pageSize = 48;
         int pages = Math.max(1, (matches.size() + pageSize - 1) / pageSize);
@@ -51,18 +51,18 @@ public class CraftingController {
     public AttemptResult attempt(@RequestBody Attempt attempt, HttpSession session) {
         if (attempt.grid() == null || attempt.grid().size() != 9
                 || attempt.grid().stream().anyMatch(id -> id != null && items.find(id) == null)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Skicka nio rutor med giltiga item-ID:n eller null.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Send nine slots containing valid item IDs or null.");
         }
         synchronized (session) {
             var challenge = (Challenge) session.getAttribute(ACTIVE_CHALLENGE);
             if (challenge == null || !challenge.id().equals(attempt.challengeId())) {
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "Hämta ett nytt recept och försök igen.");
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Get a new recipe and try again.");
             }
             boolean correct = recipes.matches(challenge.target().id(), attempt.grid());
             // Behåll frågan så att fel går att rätta och nätverksförsök kan skickas igen.
             return new AttemptResult(correct, correct
-                    ? "Rätt! Du har craftat " + challenge.target().name() + "."
-                    : "Inte riktigt! Ändra ingredienserna eller placeringen och försök igen.");
+                    ? "Correct! You crafted " + challenge.target().name() + "."
+                    : "Not quite! Change the ingredients or their positions and try again.");
         }
     }
 

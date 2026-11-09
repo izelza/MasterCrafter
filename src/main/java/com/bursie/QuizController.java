@@ -51,10 +51,10 @@ public class QuizController {
             var active = (ActiveQuestion) session.getAttribute(CURRENT_QUESTION);
             if (active == null || !active.question().id().equals(answer.questionId())) {
                 throw new ResponseStatusException(HttpStatus.CONFLICT,
-                        "Frågan är inte längre aktiv. Hämta en ny fråga.");
+                        "This question is no longer active. Get a new question.");
             }
             if (active.question().options().stream().noneMatch(option -> option.id().equals(answer.optionId()))) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Välj ett av frågans alternativ.");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Choose one of the available answers.");
             }
             session.removeAttribute(CURRENT_QUESTION);
             return new AnswerResult(active.correctOptionId().equals(answer.optionId()),

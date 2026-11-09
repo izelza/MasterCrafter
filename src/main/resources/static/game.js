@@ -14,8 +14,8 @@ async function post(path, body) {
     });
     if (!response.ok) {
         throw new Error(response.status === 409
-            ? 'Frågan är inte längre aktiv. Hämta en ny fråga.'
-            : 'Kunde inte kontakta spelet. Kontrollera att servern körs och försök igen.');
+            ? 'This question is no longer active. Get a new question.'
+            : 'Could not reach the game. Check that the server is running and try again.');
     }
     return response.json();
 }
@@ -23,7 +23,7 @@ async function post(path, body) {
 function showError(error) {
     feedback.className = 'feedback error';
     feedback.textContent = error.message;
-    nextButton.textContent = 'Hämta ny fråga';
+    nextButton.textContent = 'Get a new question';
     nextButton.hidden = false;
 }
 
@@ -35,18 +35,18 @@ async function newQuestion() {
     image.hidden = true;
     loadingIcon.hidden = false;
     feedback.className = 'feedback';
-    feedback.textContent = 'Hämtar en fråga…';
+    feedback.textContent = 'Loading a question…';
     try {
         question = await post('/api/quiz/questions');
-        // Vänta på ikonen innan det går att svara.
+        // Wait for the icon before enabling the answers.
         await new Promise((resolve, reject) => {
             image.onload = resolve;
-            image.onerror = () => reject(new Error('Bilden kunde inte laddas. Prova en ny fråga.'));
+            image.onerror = () => reject(new Error('The image could not be loaded. Try a new question.'));
             image.src = question.iconUrl;
         });
         image.hidden = false;
         loadingIcon.hidden = true;
-        image.alt = 'Minecraft-föremålet du ska namnge';
+        image.alt = 'The Minecraft item to identify';
         for (const option of question.options) {
             const button = document.createElement('button');
             button.type = 'button';
@@ -56,7 +56,7 @@ async function newQuestion() {
             button.addEventListener('click', () => submitAnswer(option.id));
             options.append(button);
         }
-        feedback.textContent = 'Vilket namn hör till bilden?';
+        feedback.textContent = 'Which name matches the picture?';
         options.querySelector('button').focus({ preventScroll: true });
     } catch (error) {
         showError(error);
@@ -70,19 +70,19 @@ async function submitAnswer(optionId) {
     busy = true;
     const buttons = [...options.querySelectorAll('button')];
     buttons.forEach(button => button.disabled = true);
-    feedback.textContent = 'Kontrollerar svaret…';
+    feedback.textContent = 'Checking your answer…';
     try {
         const result = await post('/api/quiz/answers', { questionId: question.id, optionId });
         feedback.className = result.correct ? 'feedback success' : 'feedback error';
         feedback.textContent = result.correct
-            ? `Rätt! Det är ${result.correctName}.`
-            : `Inte riktigt! Rätt svar är ${result.correctName}.`;
+            ? `Correct! It is ${result.correctName}.`
+            : `Not quite! The correct answer is ${result.correctName}.`;
         image.alt = result.correctName;
         for (const button of buttons) {
             if (button.dataset.optionId === result.correctOptionId) button.classList.add('correct');
             else if (button.dataset.optionId === optionId) button.classList.add('wrong');
         }
-        nextButton.textContent = 'Nästa fråga →';
+        nextButton.textContent = 'Next question →';
         nextButton.hidden = false;
         nextButton.focus({ preventScroll: true });
     } catch (error) {

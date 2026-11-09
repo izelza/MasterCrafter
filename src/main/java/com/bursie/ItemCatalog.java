@@ -27,7 +27,7 @@ public class ItemCatalog {
         try (var input = new ClassPathResource("minecraft/items.json").getInputStream()) {
             ids = mapper.readValue(input, new TypeReference<>() {});
         }
-        try (var input = new ClassPathResource("minecraft/lang/sv_se.json").getInputStream()) {
+        try (var input = new ClassPathResource("minecraft/lang/en_us.json").getInputStream()) {
             names = mapper.readValue(input, new TypeReference<>() {});
         }
 
@@ -44,7 +44,7 @@ public class ItemCatalog {
         if (loaded.stream().map(Item::name).distinct().count() < 2) {
             throw new IllegalStateException("Spelet behöver minst två olika itemnamn.");
         }
-        var collator = Collator.getInstance(Locale.forLanguageTag("sv"));
+        var collator = Collator.getInstance(Locale.ENGLISH);
         loaded.sort(Comparator.comparing(Item::name, collator));
         items = List.copyOf(loaded);
         byId = items.stream().collect(Collectors.toUnmodifiableMap(Item::id, Function.identity()));

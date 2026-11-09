@@ -33,3 +33,12 @@
 - Testade den byggda jar-filen på separat port 8081 i headless Edge: bläddring, sökning, placering, högerklick/sudda/töm, felaktigt försök, korrekt crafting och nästa utmaning. Granskade desktop- och mobilskärmbilder och kontrollerade att mobilvyn inte får horisontell scroll. Även frågespelets webbläsartest passerar.
 - Uppdaterade README.md och BESLUT.md. Sparar fungerande milstolpe i Git.
 - Nästa steg: Oscar laddar om Maven, startar om Main och provar crafting på http://localhost:8080. Utvärdera framför allt hur enkelt det är att söka och placera ingredienser innan fler funktioner väljs.
+
+## 2026-11-09 – Engelskt gränssnitt och engelska föremålsnamn
+- Oscar tyckte att crafting-prototypen var bra och ville börja finslipningen med att byta hela hemsidan till engelska.
+- Bytte till Minecrafts engelska språkfil en_us.json för alla föremål. Inventory, målföremål, sökning, sortering och quizalternativ använder nu engelska namn.
+- Översatte båda webbsidorna, knappar, instruktioner, platshållare, sidindelning, återkoppling, felmeddelanden, verktygstips och tillgänglighetstexter. Sidorna har lang=en och föremålsantal formateras med engelsk lokalinställning.
+- Uppdaterade det tidigare språkbeslutet och README.md enligt Oscars nya önskemål. Projektdokumentationen fortsätter vara på svenska.
+- Rent Maven-bygge och alla tolv automatiska tester passerar. Testet kontrollerar sökning efter OAK PLANKS och att samtliga 1 038 namn motsvarar den engelska resursfilen.
+- Båda webbläsartesterna passerar för den byggda jar-filen: rätt/fel, fortsatt spel, engelskt målnamn och Craft!-knapp, inventory, placering/suddning samt mobilvy. Uppdaterade testskriptens gamla svenska förväntningar till engelska.
+- Nästa steg: ladda om Maven-projektet och starta om Main; uppdatera webbläsaren för att prova engelska versionen.

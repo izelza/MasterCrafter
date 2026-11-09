@@ -1,35 +1,35 @@
 <!doctype html>
-<html lang="sv">
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#142a25">
-    <title>MasterCrafter – Minecraft-quiz</title>
+    <title>MasterCrafter – Minecraft Quiz</title>
     <link rel="stylesheet" href="/style.css">
     <script src="/game.js" defer></script>
 </head>
 <body>
     <header class="site-header">
         <a class="brand" href="/">MASTER<span>CRAFTER</span></a>
-        <nav class="mode-nav" aria-label="Spelläge"><a href="/">Crafting</a><a href="/quiz.html" aria-current="page">Frågespel</a></nav>
+        <nav class="mode-nav" aria-label="Game mode"><a href="/">Crafting</a><a href="/quiz.html" aria-current="page">Item quiz</a></nav>
     </header>
     <main>
         <section class="game" aria-labelledby="game-title">
-            <p class="eyebrow">KÄNNER DU IGEN FÖREMÅLET?</p>
-            <h1 id="game-title">Vad heter det här?</h1>
-            <p class="intro">Kolla på bilden och välj rätt namn.</p>
+            <p class="eyebrow">RECOGNIZE THIS ITEM?</p>
+            <h1 id="game-title">What is this?</h1>
+            <p class="intro">Look at the picture and choose the correct name.</p>
             <div class="item-stage">
                 <div class="item-slot">
-                    <img id="item-image" alt="Minecraft-föremålet du ska namnge" width="112" height="112" hidden>
+                    <img id="item-image" alt="The Minecraft item to identify" width="112" height="112" hidden>
                     <span id="loading-icon" aria-hidden="true">?</span>
                 </div>
             </div>
-            <div id="options" class="options" aria-label="Svarsalternativ"></div>
-            <p id="feedback" class="feedback" role="status" aria-live="polite">Hämtar en fråga…</p>
-            <button id="next" class="next" type="button" hidden>Nästa fråga <span aria-hidden="true">→</span></button>
-            <noscript>Aktivera JavaScript i webbläsaren för att spela.</noscript>
+            <div id="options" class="options" aria-label="Answer choices"></div>
+            <p id="feedback" class="feedback" role="status" aria-live="polite">Loading a question…</p>
+            <button id="next" class="next" type="button" hidden>Next question <span aria-hidden="true">→</span></button>
+            <noscript>Enable JavaScript in your browser to play.</noscript>
         </section>
     </main>
-    <footer>Byggt av Oscar &amp; Codex <span aria-hidden="true">·</span> Ett föremål i taget.</footer>
+    <footer>Built by Oscar &amp; Codex <span aria-hidden="true">·</span> One item at a time.</footer>
 </body>
 </html>

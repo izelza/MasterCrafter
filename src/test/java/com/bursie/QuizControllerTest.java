@@ -37,7 +37,7 @@ class QuizControllerTest {
         mvc.perform(get("/")).andExpect(status().isOk()).andExpect(forwardedUrl("index.html"));
         var page = mvc.perform(get("/quiz.html")).andExpect(status().isOk()).andReturn().getResponse();
         assertThat(page.getContentAsString(java.nio.charset.StandardCharsets.UTF_8))
-                .contains("Vad heter det här?");
+                .contains("What is this?");
     }
 
     @Test

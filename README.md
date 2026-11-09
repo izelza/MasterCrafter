@@ -7,11 +7,11 @@
 3. Kör `com.bursie.Main` med den gröna pilen vid `main`.
 4. Öppna http://localhost:8080 i webbläsaren för att spela crafting-spelet.
 
-Sök fram en ingrediens, välj den och klicka i crafting-gridens rutor. Klicka på **Crafta!** för att låta servern kontrollera receptet. Vid fel kan du ändra griden och försöka igen. Vid rätt går du vidare med **Nästa recept**; **Hoppa över** byter ett recept du inte vill lösa.
+Spelet har engelska föremålsnamn och engelskt gränssnitt. Sök fram en ingrediens, välj den och klicka i crafting-gridens rutor. Klicka på **Craft!** för att låta servern kontrollera receptet. Vid fel kan du ändra griden och försöka igen. Vid rätt går du vidare med **Next recipe**; **Skip recipe** byter ett recept du inte vill lösa.
 
-Välj **Sudda** och klicka för att tömma en ruta, eller högerklicka direkt i rutan. Delete/Backspace fungerar också när en ruta har tangentbordsfokus. **Töm griden** tar bort alla ingredienser. Listan kan sökas och bläddras i; alla tillgängliga föremål går att välja.
+Välj **Erase** och klicka för att tömma en ruta, eller högerklicka direkt i rutan. Delete/Backspace fungerar också när en ruta har tangentbordsfokus. **Clear grid** tar bort alla ingredienser. Listan kan sökas med engelska namn (t.ex. **oak planks**) och bläddras i; alla tillgängliga föremål går att välja.
 
-Frågespelet finns kvar via länken **Frågespel** eller http://localhost:8080/quiz.html. Stoppa servern med IntelliJs stoppknapp.
+Frågespelet finns kvar via länken **Item quiz** eller http://localhost:8080/quiz.html. Stoppa servern med IntelliJs stoppknapp.
 
 Hello-exemplet finns kvar på http://localhost:8080/api/hello och svarar `{"message":"Hello Oscar!"}`.
 
@@ -32,7 +32,7 @@ Maven Wrapper hämtar Maven automatiskt första gången. Internet behövs även 
 
 ## Spelets API
 
-- `GET /api/items?q=ekplankor&page=0` söker bland ingredienser och ger `{items, total, page, pages}` med högst 48 föremål per sida. Sidnummer börjar på noll.
+- `GET /api/items?q=oak%20planks&page=0` söker bland ingredienser och ger `{items, total, page, pages}` med högst 48 föremål per sida. Sidnummer börjar på noll.
 - `POST /api/crafting/challenges` skapar en utmaning och ger `{id, target: {id, name, iconUrl}}`.
 - `POST /api/crafting/attempts` tar emot `{challengeId, grid}` där `grid` är nio item-ID:n eller `null` för tomma rutor, rad för rad. Ger `{correct, message}`. Försök kan upprepas; en ny utmaning ersätter den tidigare i samma webbläsarsession.
 - Servern accepterar alla medföljande recept för målföremålet, ingrediensalternativ och taggar. Formade recept får flyttas och spegelvändas vågrätt, men inte roteras. Formlösa recept kontrolleras oberoende av rutornas placering, med rätt antal av varje ingrediens.

@@ -35,7 +35,7 @@
                 <targetPath>minecraft</targetPath>
                 <includes>
                     <include>items.json</include>
-                    <include>lang/sv_se.json</include>
+                    <include>lang/en_us.json</include>
                     <include>item-tags.json</include>
                     <include>recipes/*.json</include>
                 </includes>
