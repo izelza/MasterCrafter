@@ -51,3 +51,13 @@
 - Rätt försök hämtar nästa recept direkt, utan timer eller extra klick. Griden töms men vald ingrediens och sökning behålls. Bekräftelsen på föregående recept ligger kvar vid det nya tills spelaren börjar ändra eller skicka nästa försök. Felaktiga försök stannar på samma recept.
 - Maven-bygget och alla tolv backend/integrationstester passerar. Webbläsartest med riktiga högerknapps-events verifierade snabb dragning över mellanliggande rutor, släpp utanför griden, fokusförlust, suddragning, felaktigt försök, korrekt crafting med automatisk fortsättning, behållen ingrediens och mobilvy utan horisontell scroll eller JS-fel.
 - Uppdaterade instruktioner och beslut. Nästa steg är att starta om Main, uppdatera webbsidan och låta Oscar prova känslan med flera olika recept.
+
+## 2026-11-09 – Föremål vid muspekaren och fasta musknappar
+- Oscar bekräftade att högerdrag och automatisk fortsättning fungerade. Han ville att föremålets ikon skulle följa muspekaren, att vänsterknappen alltid skulle sudda, högerknappen alltid placera och handen tömmas vid nästa recept.
+- Lade till en pixel-skalad ikon intill muspekaren. Den kan inte fånga klick, hålls inom fönstrets kanter och döljs när handen är tom eller pekaren/fokus lämnar fönstret.
+- Högerklick/högerdrag placerar valt föremål. Vänsterklick/vänsterdrag suddar utan att ändra vad spelaren håller i. Högerknappen med tom hand ändrar inga rutor. Båda dragningarna hanterar snabba rörelser och avslutas vid släpp eller fokusförlust.
+- Bytte tidigare Erase-knappen mot Drop item, eftersom suddning nu alltid ligger på vänsterknappen. Bevarade tangentbordsplacering med Enter/Space och suddning med Delete/Backspace; touch kan fortfarande placera genom att trycka i en ruta.
+- Varje ny utmaning tömmer nu både handen och griden, även vid Skip recipe och automatisk fortsättning efter rätt svar. Inventory-sökningen behålls.
+- Alla tolv automatiska tester passerar. Webbläsartest med riktiga mus-events verifierade ikonens följning och klickgenomsläpp, inga överflöden vid fönsterkant, vänster/höger-klick och dragning med valt föremål, vänstersuddning med tom hand, oförändrad grid vid högerdrag utan valt föremål, släpp utanför griden, fokusförlust, fel/rätt försök och tömd hand vid både automatisk fortsättning och Skip recipe. Desktop-skärmbild granskades.
+- Vid sista paketeringen var testserverns jar-fil låst av Windows. Stoppade testservern och byggde om paketet utan att köra om redan godkända tester; bygget lyckades.
+- Uppdaterade BESLUT.md och README.md enligt de nya kontrollerna. Nästa steg: starta om Main och låt Oscar testa känslan med ikonen och båda musknapparna.

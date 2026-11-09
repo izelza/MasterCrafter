@@ -29,13 +29,13 @@
                 </div>
                 <div id="craft-grid" class="craft-grid" role="group" aria-label="Crafting grid, three rows and three columns"></div>
                 <div class="tools">
-                    <button id="eraser" type="button" class="secondary" aria-pressed="true">Erase</button>
+                    <button id="drop-item" type="button" class="secondary" disabled>Drop item</button>
                     <button id="clear-grid" type="button" class="secondary">Clear grid</button>
                 </div>
-                <p class="hint">Click to place, or hold the right mouse button and drag across slots. Select Erase to remove items.</p>
+                <p class="hint">Right-click to place. Left-click to erase. Hold either button and drag across slots. Keyboard: Enter/Space to place, Delete to erase.</p>
                 <div class="selected-item" aria-live="polite">
                     <img id="selected-icon" alt="" width="32" height="32" hidden>
-                    <span id="selected-name">Choose an ingredient from the inventory.</span>
+                    <span id="selected-name">Empty hands. Choose an ingredient from the inventory.</span>
                 </div>
                 <div class="craft-actions">
                     <button id="craft" type="button" class="next" disabled>Craft!</button>
@@ -64,5 +64,6 @@
         <noscript>Enable JavaScript in your browser to play.</noscript>
     </main>
     <footer>Built by Oscar &amp; Codex <span aria-hidden="true">·</span> One recipe at a time.</footer>
+    <img id="held-item" class="held-item" alt="" aria-hidden="true" draggable="false" width="32" height="32" hidden>
 </body>
 </html>

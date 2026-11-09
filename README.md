@@ -7,9 +7,11 @@
 3. Kör `com.bursie.Main` med den gröna pilen vid `main`.
 4. Öppna http://localhost:8080 i webbläsaren för att spela crafting-spelet.
 
-Spelet har engelska föremålsnamn och engelskt gränssnitt. Sök fram en ingrediens, välj den och klicka i crafting-gridens rutor. Håll höger musknapp nere och dra över griden för att fylla flera rutor med samma ingrediens. Klicka på **Craft!** för att låta servern kontrollera receptet. Vid fel kan du ändra griden och försöka igen. Vid rätt hämtas nästa recept direkt och griden töms automatiskt; bekräftelsen på det klarade receptet ligger kvar tills du börjar nästa försök. Vald ingrediens och inventory-sökning behålls. **Skip recipe** byter ett recept du inte vill lösa.
+Spelet har engelska föremålsnamn och engelskt gränssnitt. Sök fram och välj en ingrediens; dess ikon följer muspekaren. Högerklicka i crafting-griden för att placera den eller håll höger musknapp nere och dra för att fylla flera rutor. Vänsterklicka eller vänsterdra för att sudda, även när du håller i ett föremål. Högerknappen gör inget när handen är tom.
 
-Välj **Erase** och klicka för att tömma en ruta, eller håll höger musknapp nere och dra för att sudda flera rutor. Delete/Backspace fungerar också när en ruta har tangentbordsfokus. **Clear grid** tar bort alla ingredienser. Listan kan sökas med engelska namn (t.ex. **oak planks**) och bläddras i; alla tillgängliga föremål går att välja.
+Klicka på **Craft!** för att låta servern kontrollera receptet. Vid fel kan du ändra griden och försöka igen. Vid rätt hämtas nästa recept direkt; bekräftelsen ligger kvar tills du börjar nästa försök. Handen och griden töms vid varje nytt recept, även när du använder **Skip recipe**. Inventory-sökningen behålls.
+
+**Drop item** släpper föremålet du håller i och **Clear grid** tömmer griden. Med tangentbord kan du använda Enter/Space på en ruta för att placera, eller Delete/Backspace för att sudda. Listan kan sökas med engelska namn (t.ex. **oak planks**) och bläddras i; alla tillgängliga föremål går att välja.
 
 Frågespelet finns kvar via länken **Item quiz** eller http://localhost:8080/quiz.html. Stoppa servern med IntelliJs stoppknapp.
 

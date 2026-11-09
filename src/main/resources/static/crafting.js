@@ -10,6 +10,30 @@ let searchVersion = 0;
 let searchTimer;
 let paintGesture = null;
 const gridElement = element('craft-grid');
+const heldIcon = element('held-item');
+let pointerPosition = null;
+
+function updateHeldIcon() {
+    heldIcon.hidden = !selected || !pointerPosition;
+    if (heldIcon.hidden) return;
+    heldIcon.style.left = `${Math.min(pointerPosition.x + 12, Math.max(0, window.innerWidth - 36))}px`;
+    heldIcon.style.top = `${Math.min(pointerPosition.y + 12, Math.max(0, window.innerHeight - 36))}px`;
+}
+
+function trackPointer(event) {
+    if (event.pointerType !== 'mouse') return;
+    pointerPosition = event.clientX >= 0 && event.clientX < window.innerWidth
+        && event.clientY >= 0 && event.clientY < window.innerHeight
+        ? { x: event.clientX, y: event.clientY } : null;
+    updateHeldIcon();
+}
+
+document.addEventListener('pointermove', trackPointer, { capture: true, passive: true });
+document.addEventListener('pointerdown', trackPointer, { capture: true, passive: true });
+document.documentElement.addEventListener('pointerleave', () => {
+    pointerPosition = null;
+    updateHeldIcon();
+});
 
 async function request(url, body) {
     let response;
@@ -57,7 +81,7 @@ function refreshGrid() {
     });
     element('craft').disabled = working || solved || !challenge || grid.every(item => !item);
     element('clear-grid').disabled = working || solved || !challenge || grid.every(item => !item);
-    element('eraser').disabled = working || solved || !challenge;
+    element('drop-item').disabled = working || !selected;
     element('new-recipe').disabled = working;
     element('new-recipe').textContent = !challenge ? 'New recipe' : 'Skip recipe';
 }
@@ -74,7 +98,12 @@ for (let index = 0; index < 9; index++) {
     button.type = 'button';
     button.className = 'grid-cell';
     button.dataset.slot = index;
-    button.addEventListener('click', () => changeCell(index, selected));
+    // Mouse actions use pointer events; retain placement by keyboard or touch.
+    button.addEventListener('click', event => {
+        if (event.detail === 0 || (event.pointerType && event.pointerType !== 'mouse')) {
+            changeCell(index, selected);
+        }
+    });
     button.addEventListener('keydown', event => {
         if (event.key === 'Delete' || event.key === 'Backspace') {
             event.preventDefault();
@@ -116,11 +145,13 @@ function paintTo(x, y) {
 
 gridElement.addEventListener('contextmenu', event => event.preventDefault());
 gridElement.addEventListener('pointerdown', event => {
-    if (event.button !== 2 || working || solved || !challenge) return;
+    if (event.pointerType !== 'mouse' || ![0, 2].includes(event.button) || working || solved || !challenge) return;
     event.preventDefault();
     finishPainting();
+    if (event.button === 2 && !selected) return;
     paintGesture = {
-        pointerId: event.pointerId, item: selected, visited: new Set(),
+        pointerId: event.pointerId, item: event.button === 0 ? null : selected,
+        buttonMask: event.button === 0 ? 1 : 2, visited: new Set(),
         x: event.clientX, y: event.clientY
     };
     gridElement.setPointerCapture(event.pointerId);
@@ -128,7 +159,7 @@ gridElement.addEventListener('pointerdown', event => {
 });
 gridElement.addEventListener('pointermove', event => {
     if (!paintGesture || paintGesture.pointerId !== event.pointerId) return;
-    if (!(event.buttons & 2)) {
+    if (!(event.buttons & paintGesture.buttonMask)) {
         finishPainting();
         return;
     }
@@ -136,23 +167,29 @@ gridElement.addEventListener('pointermove', event => {
     paintTo(event.clientX, event.clientY);
 });
 gridElement.addEventListener('pointerup', event => {
-    if (paintGesture?.pointerId === event.pointerId && !(event.buttons & 2)) {
+    if (paintGesture?.pointerId === event.pointerId && !(event.buttons & paintGesture.buttonMask)) {
         paintTo(event.clientX, event.clientY);
         finishPainting();
     }
 });
 gridElement.addEventListener('pointercancel', finishPainting);
 gridElement.addEventListener('lostpointercapture', finishPainting);
-window.addEventListener('blur', finishPainting);
+window.addEventListener('blur', () => {
+    finishPainting();
+    pointerPosition = null;
+    updateHeldIcon();
+});
 
 function selectItem(item) {
     selected = item;
     element('selected-icon').hidden = !item;
     if (item) element('selected-icon').src = item.iconUrl;
     element('selected-name').textContent = item
-        ? `Selected: ${item.name}. Click or hold right-click and drag to place.`
-        : 'Erase selected. Click or hold right-click and drag to clear slots.';
-    element('eraser').setAttribute('aria-pressed', String(!item));
+        ? `Holding: ${item.name}. Right-click to place; left-click to erase. Drag with either button.`
+        : 'Empty hands. Choose an ingredient from the inventory. Left-click still erases.';
+    if (item) heldIcon.src = item.iconUrl;
+    updateHeldIcon();
+    element('drop-item').disabled = working || !item;
     for (const button of element('inventory').children) {
         button.setAttribute('aria-pressed', String(button.dataset.itemId === item?.id));
     }
@@ -205,6 +242,7 @@ async function newChallenge(previousSuccess = null) {
     solved = false;
     challenge = null;
     grid.fill(null);
+    selectItem(null);
     element('target-name').textContent = 'Loading recipe…';
     element('target-icon').hidden = true;
     feedback(previousSuccess ?? 'Loading recipe…', previousSuccess ? 'success' : '');
@@ -264,7 +302,7 @@ element('clear-search').addEventListener('click', () => {
 element('previous-page').addEventListener('click', () => loadItems(page - 1));
 element('next-page').addEventListener('click', () => loadItems(page + 1));
 element('retry-items').addEventListener('click', () => loadItems());
-element('eraser').addEventListener('click', () => selectItem(null));
+element('drop-item').addEventListener('click', () => selectItem(null));
 element('clear-grid').addEventListener('click', () => {
     if (working || solved || !challenge) return;
     grid.fill(null);
