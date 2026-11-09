@@ -1,5 +1,7 @@
 # MasterCrafter
 
+Källkod och utvecklingshistorik finns på [GitHub: izelza/MasterCrafter](https://github.com/izelza/MasterCrafter).
+
 ## Starta i IntelliJ
 
 1. Läs in `pom.xml` som Maven-projekt (Reload All Maven Projects).

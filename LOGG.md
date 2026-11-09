@@ -129,3 +129,6 @@
 
 ## 2026-11-09 – Push efter varje commit
 - Magnus bekräftade att GitHub-push fungerar och instruerade att varje framtida commit ska pushas till origin. Regeln finns nu i BESLUT.md för kommande arbetspass.
+
+## 2026-11-09 – Nytt praktiskt push-test
+- Magnus bad om en liten README-ändring och en ny commit/push för att kontrollera terminalens Git-inloggning. Lade till en länk till projektets GitHub-repository och testar push med den lokala Git Credential Manager-inloggningen.
