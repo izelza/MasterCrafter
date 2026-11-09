@@ -28,9 +28,12 @@ main { display: block; width: min(1160px, 100%); margin: auto; padding: 28px 24p
 }
 .grid-cell::before { background-image: var(--mc-slot-highlight-back); z-index: 0; }
 .grid-cell::after { background-image: var(--mc-slot-highlight-front); z-index: 2; }
-.grid-cell:hover:enabled::before, .grid-cell:hover:enabled::after { opacity: 1; }
+.grid-cell:is(:hover, :focus-visible):enabled::before,
+.grid-cell:is(:hover, :focus-visible):enabled::after { opacity: 1; }
+/* Grid focus uses the same lightened interior as hover, never a white frame. */
+.grid-cell:focus-visible, .inventory-item:focus-visible { outline: none; box-shadow: none; }
 .grid-cell:disabled { cursor: default; }
-.craft-grid.is-solution .grid-cell { outline: 2px solid var(--mc-highlight); outline-offset: -5px; opacity: 1; }
+.craft-grid.is-solution .grid-cell { opacity: 1; }
 .holding-item, .holding-item * { cursor: var(--held-item-cursor) !important; }
 .hint { color: var(--mc-inset-shadow); font-size: .8rem; line-height: 1.5; margin: 12px 0; }
 .tools { display: flex; gap: 8px; justify-content: center; }
@@ -48,10 +51,25 @@ input[type="search"]::placeholder { color: var(--mc-outline); opacity: 1; }
 input:focus-visible { outline: 2px solid var(--mc-outline); outline-offset: 3px; }
 .inventory-status { font-size: .8rem; color: var(--mc-inset-shadow); min-height: 1.5em; margin: 14px 0 10px; }
 .inventory { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; max-height: 348px; overflow-y: auto; padding: 5px; margin: -5px; scrollbar-color: var(--mc-slot) var(--mc-panel); }
-.inventory-item { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 9px 3px 6px; min-width: 0; background: var(--mc-slot); color: var(--mc-outline); border: 3px solid var(--mc-inset-shadow); border-image: var(--mc-slot-texture) 1 fill / 3px / 0 stretch; border-radius: 0; image-rendering: pixelated; }
-.inventory-item img { width: 32px; height: 32px; image-rendering: pixelated; }
-.inventory-item span { font-size: .75rem; line-height: 1.3; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.inventory-item:hover { outline: 2px solid var(--mc-highlight); outline-offset: -4px; }
+.inventory-item { position: relative; isolation: isolate; display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 9px 3px 6px; min-width: 0; background: var(--mc-slot); color: var(--mc-outline); border: 3px solid var(--mc-inset-shadow); border-image: var(--mc-slot-texture) 1 fill / 3px / 0 stretch; border-radius: 0; image-rendering: pixelated; }
+.inventory-item img { position: relative; z-index: 1; width: 32px; height: 32px; image-rendering: pixelated; }
+.inventory-item span { position: relative; z-index: 1; font-size: .75rem; line-height: 1.3; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Crop the sprites' transparent margins so rectangular inventory tiles are
+   highlighted to their inner edges too, without painting over the bevel. */
+.inventory-item::before, .inventory-item::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-size: 150% 150%;
+    background-position: center;
+    image-rendering: pixelated;
+    pointer-events: none;
+    opacity: 0;
+}
+.inventory-item::before { background-image: var(--mc-slot-highlight-back); z-index: 0; }
+.inventory-item::after { background-image: var(--mc-slot-highlight-front); z-index: 2; }
+.inventory-item:is(:hover, :focus-visible)::before,
+.inventory-item:is(:hover, :focus-visible)::after { opacity: 1; }
 .inventory-item[aria-pressed="true"] { outline: 3px solid var(--mc-outline); outline-offset: -3px; }
 .pagination { display: flex; align-items: center; justify-content: space-between; margin-top: 18px; gap: 8px; font-size: .8rem; }
 #page-label { color: var(--mc-inset-shadow); }

@@ -162,3 +162,11 @@
 - Startade den byggda jar-filen med PORT=18081 och SERVER_ADDRESS=0.0.0.0 utan kommandoargument som skriver över porten. Verifierade HTTP via IPv4 för health, frontend, aktuell utmaning, facit, item-ikon, WOFF2-font och hover-textur. Windows rapporterade en dual-stack-listener och IPv4-anropen fungerade. Testservern stoppades efteråt.
 - Ett tillfälligt testscriptsvariabelnamn krockade med PowerShells skrivskyddade HOME. Bytte till ett uppgiftsspecifikt namn och körde om kontrollen; ingen ändring av appen behövdes.
 - Dockerfilen och dokumentationen committas/pushas så att den anslutna Render-tjänsten kan bygga den. Render-deployens faktiska resultat har inte verifierats från denna miljö.
+
+## 2026-11-09 – Bort med kvarvarande vita slot-ramar
+- Oscar bad att ta bort kritvita outlines när man hovrar en slot, men behålla ljusningen av själva rutan.
+- Hittade kvarvarande vit hover-outline i inventoryt, den gemensamma vita fokusramen för knappar och en separat vit ram runt crafting-rutor när facit visas.
+- Gridens fokusram och extra box-shadow tas nu bort. Tangentbordsfokus ljusar upp insidan med samma originaltexturer som hover. Tog även bort facitets vita slot-ramar.
+- Inventoryts vita hover-outline ersattes med originalens bak-/framlager, beskurna till den rektangulära insidan. Item och etikett ligger mellan lagren. Ingen JavaScript eller backend behövde ändras. Vald ingrediens behåller sin svarta markering.
+- Maven-paketering och hela crafting-webbläsartestet passerar. Nya kontroller verifierar riktig tangentbordsfokus i både grid och inventory med outline=none, box-shadow=none och synlig ljusning, inventory-hover utan outline samt att samtliga facitrutor saknar outline. Befintlig kontroll av hovertexturer, lagrens mått, native cursor, musknappar/dragning, crafting och mobilvy fungerar fortsatt utan JS-fel eller horisontell scroll.
+- Uppdaterade BESLUT.md och docs/MINECRAFT-HOVER.md. Testservern stoppades. Ändringen committas och pushas så den anslutna Render-tjänsten kan deploya den.

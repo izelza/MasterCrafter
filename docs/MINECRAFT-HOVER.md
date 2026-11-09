@@ -25,7 +25,14 @@ Det synliga lagret täcker exakt insidan och lämnar skuggkanterna orörda.
 
 `::before` visar baklagret, item-ikonen ligger ovanför det och `::after`
 visar framlagret. Lagren är klickgenomsläppliga och visas endast när en
-redigerbar ruta hovras. Tangentbordsfokus har kvar en separat fokusmarkering.
+redigerbar ruta hovras eller har tangentbordsfokus. Fokus använder samma
+ljusning utan vit outline eller extra box-shadow. Inte heller facit får en vit
+ram runt varje ruta.
+
+Inventory-rutorna använder samma bak-/framlager utan vit hover-ram. Deras
+rektangulära insidor täcks genom att centrera texturerna i 150 procent av
+ytans storlek: då beskärs den transparenta tredjedelen runt den vita mitten.
+Den befintliga svarta markeringen för vald ingrediens behålls.
 
 Webbläsarens skärmbild verifierades med pixelprover: tom markerad insida
 blev `#C0C0C0` av originalens två alfalager över `#8B8B8B`. Skuggkanten
