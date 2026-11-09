@@ -64,6 +64,8 @@ Varje webbläsarsession får en egen `CraftingSession`. Servicen är gemensam, m
 
 Det grå inventory-temat använder färger uppmätta i Mojangs originaltexturer för Java 26.3 samt oförändrade knapp- och ruttexturer. Paletten ligger i `minecraft-theme.css`; källor och exakta värden finns i [docs/MINECRAFT-FARGER.md](docs/MINECRAFT-FARGER.md).
 
+Crafting-rutornas hover-markering använder originalets två genomskinliga lager och täcker hela insidan utan att ändra skuggkanterna. Mått och pixelkontroller beskrivs i [docs/MINECRAFT-HOVER.md](docs/MINECRAFT-HOVER.md).
+
 Båda spellägena använder Mojangs **Minecraft Seven v2** som lokal webbfont via `minecraft-font.css`. Den behöver ingen extern fonttjänst när spelet körs. Källa och kontrollsumma finns i [docs/MINECRAFT-FONT.md](docs/MINECRAFT-FONT.md).
 
 `src/main/resources/static` innehåller vanlig HTML/CSS/JavaScript. `crafting.js` styr spelvyn, inventory och API-anrop; `crafting-input.js` hanterar dragning, tangentbord och touch. `item-cursor.js` skapar och cachar native CSS-muspekare från item-ikoner (32×32 med pixel-skalning och centrerad klickpunkt). Markören följer musen utan att JavaScript måste flytta någon bild på sidan. Filerna laddas som JavaScript-moduler utan npm eller separat byggsteg. Facit hämtas från backend och beräknas inte i frontend.

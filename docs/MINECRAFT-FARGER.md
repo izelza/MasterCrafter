@@ -28,6 +28,9 @@ Spelets oförändrade knapp- och ruttexturer används direkt i CSS från
 `src/main/resources/static/ui/minecraft/`. Då bevaras även knapptexturernas
 grå variationer. Paletten ligger samlad i `minecraft-theme.css`.
 
+Hover använder även originalets genomskinliga bak- och framlager. De blandas
+med rutans färg enligt [docs/MINECRAFT-HOVER.md](MINECRAFT-HOVER.md).
+
 Webbsidans yttre bakgrund använder `#555555` från inventoryts skuggkant.
 Det är en tillämpning av paletten på vår webbsida; Minecrafts bakgrund bakom
 inventory-fönstret är spelvärlden och har ingen enda fast grå färg.

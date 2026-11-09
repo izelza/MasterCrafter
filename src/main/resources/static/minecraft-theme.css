@@ -10,6 +10,8 @@
     --mc-button-hover: #757575;
     --mc-button-disabled: #2c2c2c;
     --mc-slot-texture: url('/ui/minecraft/slot.png');
+    --mc-slot-highlight-back: url('/ui/minecraft/slot_highlight_back.png');
+    --mc-slot-highlight-front: url('/ui/minecraft/slot_highlight_front.png');
     --mc-button-texture: url('/ui/minecraft/button.png');
     --mc-button-hover-texture: url('/ui/minecraft/button_highlighted.png');
     --mc-button-disabled-texture: url('/ui/minecraft/button_disabled.png');
