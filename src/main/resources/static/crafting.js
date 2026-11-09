@@ -1,4 +1,5 @@
 import { setupCraftingInput } from './crafting-input.js';
+import { setHeldItemCursor } from './item-cursor.js';
 
 const element = id => document.getElementById(id);
 const grid = Array(9).fill(null);
@@ -13,9 +14,8 @@ let pages = 1;
 let searchVersion = 0;
 let searchTimer;
 const gridElement = element('craft-grid');
-const heldIcon = element('held-item');
-const { finishPainting, updateHeldIcon } = setupCraftingInput({
-    gridElement, heldIcon, canEdit: canEditGrid, getSelected: () => selected, onCellChange: changeCell
+const { finishPainting } = setupCraftingInput({
+    gridElement, canEdit: canEditGrid, getSelected: () => selected, onCellChange: changeCell
 });
 async function request(url, body) {
     let response;
@@ -88,8 +88,7 @@ function selectItem(item) {
     element('selected-name').textContent = item
         ? `Holding: ${item.name}. Right-click to place; left-click to erase. Drag with either button.`
         : 'Empty hands. Choose an ingredient from the inventory. Left-click still erases.';
-    if (item) heldIcon.src = item.iconUrl;
-    updateHeldIcon();
+    setHeldItemCursor(item);
     element('drop-item').disabled = working || !item;
     for (const button of element('inventory').children) {
         button.setAttribute('aria-pressed', String(button.dataset.itemId === item?.id));

@@ -7,7 +7,7 @@
 3. Kör `com.bursie.Main` med den gröna pilen vid `main`.
 4. Öppna http://localhost:8080 i webbläsaren för att spela crafting-spelet.
 
-Spelet har engelska föremålsnamn och engelskt gränssnitt. Sök fram och välj en ingrediens; ikonens mitt följer muspekaren. Högerklicka i crafting-griden för att placera den eller håll höger musknapp nere och dra för att fylla flera rutor. Vänsterklicka eller vänsterdra för att sudda, även när du håller i ett föremål. Högerknappen gör inget när handen är tom.
+Spelet har engelska föremålsnamn och engelskt gränssnitt. Sök fram och välj en ingrediens; föremålet blir själva muspekaren med klickpunkten i ikonens mitt. Högerklicka i crafting-griden för att placera den eller håll höger musknapp nere och dra för att fylla flera rutor. Vänsterklicka eller vänsterdra för att sudda, även när du håller i ett föremål. Högerknappen gör inget när handen är tom.
 
 Klicka på **Craft!** för att låta servern kontrollera receptet. Vid fel kan du ändra griden och försöka igen. Vid rätt hämtas nästa recept direkt; bekräftelsen ligger kvar tills du börjar nästa försök. **Skip recipe** visar först ett korrekt recept i griden. Då låses griden och Craft!-knappen, och knappen byter namn till **Next recipe**. Klicka igen för att hämta ett nytt recept. Handen och griden töms vid varje nytt recept. Inventory-sökningen behålls.
 
@@ -60,4 +60,4 @@ Varje webbläsarsession får en egen `CraftingSession`. Servicen är gemensam, m
 
 ## Frontend
 
-`src/main/resources/static` innehåller vanlig HTML/CSS/JavaScript. `crafting.js` styr spelvyn, inventory och API-anrop; `crafting-input.js` hanterar muspekare, dragning, tangentbord och touch. De laddas som JavaScript-moduler utan npm eller separat byggsteg. Facit hämtas från backend och beräknas inte i frontend.
+`src/main/resources/static` innehåller vanlig HTML/CSS/JavaScript. `crafting.js` styr spelvyn, inventory och API-anrop; `crafting-input.js` hanterar dragning, tangentbord och touch. `item-cursor.js` skapar och cachar native CSS-muspekare från item-ikoner (32×32 med pixel-skalning och centrerad klickpunkt). Markören följer musen utan att JavaScript måste flytta någon bild på sidan. Filerna laddas som JavaScript-moduler utan npm eller separat byggsteg. Facit hämtas från backend och beräknas inte i frontend.

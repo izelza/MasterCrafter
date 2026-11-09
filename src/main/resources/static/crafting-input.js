@@ -1,30 +1,6 @@
-// Cursor display and mouse/keyboard/touch input. Game flow stays in crafting.js.
-export function setupCraftingInput({ gridElement, heldIcon, canEdit, getSelected, onCellChange }) {
+// Mouse/keyboard/touch input. Game flow stays in crafting.js.
+export function setupCraftingInput({ gridElement, canEdit, getSelected, onCellChange }) {
     let paintGesture = null;
-    let pointerPosition = null;
-
-    function updateHeldIcon() {
-        const selected = getSelected();
-        heldIcon.hidden = !selected || !pointerPosition;
-        if (heldIcon.hidden) return;
-        heldIcon.style.left = `${pointerPosition.x}px`;
-        heldIcon.style.top = `${pointerPosition.y}px`;
-    }
-
-    function trackPointer(event) {
-        if (event.pointerType !== 'mouse') return;
-        pointerPosition = event.clientX >= 0 && event.clientX < window.innerWidth
-            && event.clientY >= 0 && event.clientY < window.innerHeight
-            ? { x: event.clientX, y: event.clientY } : null;
-        updateHeldIcon();
-    }
-
-    document.addEventListener('pointermove', trackPointer, { capture: true, passive: true });
-    document.addEventListener('pointerdown', trackPointer, { capture: true, passive: true });
-    document.documentElement.addEventListener('pointerleave', () => {
-        pointerPosition = null;
-        updateHeldIcon();
-    });
 
     for (let index = 0; index < 9; index++) {
         const button = document.createElement('button');
@@ -107,11 +83,7 @@ export function setupCraftingInput({ gridElement, heldIcon, canEdit, getSelected
     });
     gridElement.addEventListener('pointercancel', finishPainting);
     gridElement.addEventListener('lostpointercapture', finishPainting);
-    window.addEventListener('blur', () => {
-        finishPainting();
-        pointerPosition = null;
-        updateHeldIcon();
-    });
+    window.addEventListener('blur', finishPainting);
 
-    return { finishPainting, updateHeldIcon };
+    return { finishPainting };
 }

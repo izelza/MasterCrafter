@@ -106,3 +106,12 @@
 - PowerShells JSON-läsare hade problem med ett annat Minecraft-recept som använder nycklarna I och i. Verifierade därefter samtliga kvarvarande och arkiverade filer med Nodes JSON-läsare, som skiljer på versaler och gemener. Alla 19 mallrecept arkiverades korrekt.
 - Rent Maven-bygge och alla tjugo tester passerar. Kontrollerade även den färdiga jar-filen: 1 007 aktiva recept, inga mallrecept och Slimeball kvar. Det aktiva målurvalet innehåller 864 föremål.
 - Dokumenterade avgränsningen i BESLUT.md, README.md och resurskatalogens beskrivningar. Nästa steg: starta om Main och fortsätt spela; smithing templates ska inte längre kunna bli crafting-mål.
+
+## 2026-11-09 – Native item-muspekare utan DOM-eftersläpning
+- Oscar rapporterade att itemet nu var rätt placerat men att det följde musrörelsen med märkbar fördröjning. Han ville att det skulle vara fastklistrat vid pekaren.
+- Ersatte den JavaScript-flyttade DOM-bilden med en native CSS-cursor. item-cursor.js skalar den befintliga ikonen till 32×32 i en canvas med avstängd bildutjämning och använder mitten (16,16) som klickpunkt.
+- Markörbilder cachas per ikon. Versionskontroll hindrar en försenad bildladdning från att återställa ett föremål efter Drop item, facit eller ny utmaning. Vanlig muspekare återställs direkt när handen töms; ogiltig bildladdning ger vanlig markör och kan försöka laddas igen senare.
+- Tog bort det gamla överläggslagret och all positionsuppdatering vid musrörelse. Gridens dragkontroller ligger kvar i crafting-input.js. Backend och API är oförändrade.
+- JavaScript-syntaxkontroll och Maven-paketering passerar. Ingen upprepning av backendens redan godkända tester behövdes för denna frontendändring.
+- Webbläsartest av den paketerade appen passerar: native PNG-cursor över grid, inventory och sökfält, 32×32-format, centrerad klickpunkt, inga DOM-attributändringar vid vanliga musrörelser/rullning, inga horisontella överflöden, placering/suddning/dragning, rätt/fel, automatisk fortsättning, tvåklicksskip och låst facit. Kontrollerade även att fördröjd bildavkodning inte kan återställa cursor efter att handen tömts. Inga JavaScript-fel.
+- Testservern stoppades och BESLUT.md/README.md uppdaterades. Oscar behöver prova den upplevda följsamheten på sin egen mus efter omstart av Main och uppdaterad webbsida; headless-skärmbilder visar inte operativsystemets muspekare.
