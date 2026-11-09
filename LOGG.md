@@ -82,3 +82,6 @@
 - Lade till tre rena servicetester utan Spring eller HTTP: livscykel/upprepningar, kopiering av grid och återställning samt separata spelares framsteg. Utökade HTTP-testet för att säkerställa att ändrade försök efter lösning avvisas.
 - Alla sexton automatiska tester och Maven-paketering passerar. Den byggda jar-filen provades i webbläsare på port 8081 med inventory, musknappar/dragning, cursorikon, fel/rätt försök, automatisk fortsättning, tom hand inför nästa recept och mobilvy. Testservern stoppades efteråt.
 - README.md beskriver ansvarsfördelningen för pedagogisk genomgång med Oscar. BESLUT.md dokumenterar Magnus avgränsning. Redo för fortsatt arbete med Oscar efter omstart av Main.
+
+## 2026-11-09 – Frontendens hanterbarhet
+- Magnus bad att frontend också ska delas upp i fler filer när det behövs för begriplighet och underhåll. Noterade detta som en löpande utvecklingsprincip i BESLUT.md. Ingen kodändring gjordes i detta steg.
