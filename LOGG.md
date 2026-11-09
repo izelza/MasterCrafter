@@ -126,3 +126,6 @@
 - Maven-paketering passerar. Webbläsartester av den byggda jar-filen passerar för crafting och quiz: sökning, mus/cursor, placering/suddning/dragning, rätt/fel, automatisk fortsättning, tvåklicksfacit, låst Craft-knapp och mobilvy utan horisontell scroll eller JS-fel.
 - Kontrollerade runtime-CSS för färger och originaltexturer i normala, hover- och avstängda knappar. Mätte dessutom fem faktiska pixlar ur en skärmbild: sida #555555, panel #C6C6C6, rutans insida #8B8B8B, mörk kant #373737 och vit kant #FFFFFF. Alla matchade källpaletten exakt. Desktop- och mobilbilder granskades visuellt.
 - Testservern stoppades. BESLUT.md och README.md uppdaterades. Nästa steg: Oscar startar om Main och uppdaterar webbsidan för att prova gråtemat.
+
+## 2026-11-09 – Push efter varje commit
+- Magnus bekräftade att GitHub-push fungerar och instruerade att varje framtida commit ska pushas till origin. Regeln finns nu i BESLUT.md för kommande arbetspass.
