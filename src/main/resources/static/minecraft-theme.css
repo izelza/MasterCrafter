@@ -1,0 +1,16 @@
+/* Measured from Mojang's Java 26.3 textures. See docs/references/minecraft-26.3-gui-colors.json. */
+:root {
+    --mc-panel: #c6c6c6;
+    --mc-slot: #8b8b8b;
+    --mc-highlight: #ffffff;
+    --mc-inset-shadow: #373737;
+    --mc-frame-shadow: #555555;
+    --mc-outline: #000000;
+    --mc-button: #6f6f6f;
+    --mc-button-hover: #757575;
+    --mc-button-disabled: #2c2c2c;
+    --mc-slot-texture: url('/ui/minecraft/slot.png');
+    --mc-button-texture: url('/ui/minecraft/button.png');
+    --mc-button-hover-texture: url('/ui/minecraft/button_highlighted.png');
+    --mc-button-disabled-texture: url('/ui/minecraft/button_disabled.png');
+}

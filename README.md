@@ -60,4 +60,6 @@ Varje webbläsarsession får en egen `CraftingSession`. Servicen är gemensam, m
 
 ## Frontend
 
+Det grå inventory-temat använder färger uppmätta i Mojangs originaltexturer för Java 26.3 samt oförändrade knapp- och ruttexturer. Paletten ligger i `minecraft-theme.css`; källor och exakta värden finns i [docs/MINECRAFT-FARGER.md](docs/MINECRAFT-FARGER.md).
+
 `src/main/resources/static` innehåller vanlig HTML/CSS/JavaScript. `crafting.js` styr spelvyn, inventory och API-anrop; `crafting-input.js` hanterar dragning, tangentbord och touch. `item-cursor.js` skapar och cachar native CSS-muspekare från item-ikoner (32×32 med pixel-skalning och centrerad klickpunkt). Markören följer musen utan att JavaScript måste flytta någon bild på sidan. Filerna laddas som JavaScript-moduler utan npm eller separat byggsteg. Facit hämtas från backend och beräknas inte i frontend.
