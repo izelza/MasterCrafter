@@ -1,7 +1,7 @@
 import { setupCraftingInput } from './crafting-input.js?v=20261112-2';
 import { setHeldItemCursor } from './item-cursor.js';
 import { setupInventory } from './inventory.js?v=20261112-2';
-import { setupCraftingEffects } from './crafting-effects.js';
+import { setupCraftingEffects } from './crafting-effects.js?v=20261112-4';
 
 const element = id => document.getElementById(id);
 const grid = Array(9).fill(null);
@@ -15,7 +15,7 @@ const gridElement = element('craft-grid');
 const { finishPainting } = setupCraftingInput({
     gridElement, canEdit: canEditGrid, getSelected: () => selected, getCell: index => grid[index], onCellChange: changeCell
 });
-const effects = setupCraftingEffects(gridElement);
+const effects = setupCraftingEffects(gridElement, element('craft'));
 const inventory = setupInventory({ request, createIcon: icon, onSelect: selectItem });
 async function request(url, body) {
     let response;

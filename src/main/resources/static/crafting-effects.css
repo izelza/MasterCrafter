@@ -5,10 +5,13 @@
     pointer-events: none;
     overflow: hidden;
 }
+#craft { position: relative; overflow: visible; }
+.next .craft-effect-layer { padding: 0; }
+.craft-effect-layer[data-result="correct"] { overflow: visible; }
 .craft-spark {
     position: absolute;
     left: 50%;
-    top: 46%;
+    top: 50%;
     width: var(--spark-size);
     height: var(--spark-size);
     background: var(--spark-color);
