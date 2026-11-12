@@ -1,7 +1,7 @@
 import { setupCraftingInput } from './crafting-input.js?v=20261112-2';
 import { setHeldItemCursor } from './item-cursor.js';
 import { setupInventory } from './inventory.js?v=20261112-5';
-import { setupCraftingEffects } from './crafting-effects.js?v=stack-1';
+import { setupCraftingEffects } from './crafting-effects.js?v=stack-2';
 import { setupStackPanel } from './stack.js?v=stack-1';
 import { request } from './game-api.js';
 import { setupDebugMenu } from './debug-menu.js?v=1';

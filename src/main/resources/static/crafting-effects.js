@@ -27,21 +27,31 @@ export function setupCraftingEffects(grid, craftButton) {
         celebration.className = 'stack-celebration';
         celebration.setAttribute('aria-hidden', 'true');
         const colors = ['#80d65b', '#f4d56b', '#c4ef95', '#fff2aa'];
-        for (let burst = 0; burst < 3; burst++) {
-            const center = .25 + burst * .25;
-            const spread = Math.min(170, innerWidth * center - 12, innerWidth * (1 - center) - 12);
-            for (let index = 0; index < 24; index++) {
+        const bursts = [
+            { x: .5, y: .42, delay: 0 },
+            { x: .22, y: .3, delay: 220 },
+            { x: .78, y: .34, delay: 400 },
+            { x: .35, y: .56, delay: 660 },
+            { x: .65, y: .5, delay: 820 },
+            { x: .5, y: .32, delay: 1000, finale: true }
+        ];
+        for (const burst of bursts) {
+            const count = burst.finale ? 64 : 48;
+            const spreadX = Math.min(burst.finale ? 360 : 300, innerWidth * burst.x - 16, innerWidth * (1 - burst.x) - 16);
+            const spreadY = Math.min(burst.finale ? 300 : 240, innerHeight * .3);
+            for (let index = 0; index < count; index++) {
                 const spark = document.createElement('i');
                 spark.className = 'craft-spark stack-spark';
-                const angle = index / 24 * Math.PI * 2;
-                const distance = .7 + Math.random() * .3;
-                spark.style.left = `${center * 100}%`;
-                spark.style.top = burst === 1 ? '32%' : '42%';
-                spark.style.setProperty('--spark-x', `${Math.cos(angle) * spread * distance}px`);
-                spark.style.setProperty('--spark-y', `${Math.sin(angle) * 150 * distance + 70}px`);
+                const angle = index / count * Math.PI * 2;
+                // Two uneven rings give each explosion a dense core and a wide outer burst.
+                const distance = (index % 2 === 0 ? .85 : .5) + Math.random() * .15;
+                spark.style.left = `${burst.x * 100}%`;
+                spark.style.top = `${burst.y * 100}%`;
+                spark.style.setProperty('--spark-x', `${Math.cos(angle) * spreadX * distance}px`);
+                spark.style.setProperty('--spark-y', `${Math.sin(angle) * spreadY * distance}px`);
                 spark.style.setProperty('--spark-color', colors[index % colors.length]);
-                spark.style.setProperty('--spark-size', index % 3 === 0 ? '8px' : '5px');
-                spark.style.animationDelay = `${burst * 280 + index % 3 * 20}ms`;
+                spark.style.setProperty('--spark-size', index % 3 === 0 ? '12px' : '8px');
+                spark.style.animationDelay = `${burst.delay + index % 3 * 20}ms`;
                 celebration.append(spark);
             }
         }
@@ -49,7 +59,7 @@ export function setupCraftingEffects(grid, craftButton) {
         celebrationTimer = setTimeout(() => {
             celebration?.remove();
             celebration = null;
-        }, 2200);
+        }, 3200);
     }
 
     function play(correct) {

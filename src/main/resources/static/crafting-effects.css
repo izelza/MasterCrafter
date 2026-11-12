@@ -38,11 +38,23 @@
     to { opacity: 0; }
 }
 .stack-celebration { position: fixed; inset: 0; z-index: 900; overflow: hidden; pointer-events: none; }
-.stack-spark { animation: stack-spark 1400ms ease-out both; }
+.stack-spark { animation: stack-spark 1900ms cubic-bezier(.12, .6, .25, 1) both; }
+.stack-spark::after {
+    content: '';
+    position: absolute;
+    top: -9px;
+    left: 2px;
+    width: 4px;
+    height: 4px;
+    background: var(--spark-color);
+    box-shadow: 0 -7px 0 var(--spark-color);
+    opacity: .5;
+}
 @keyframes stack-spark {
     from { transform: translate(-50%, -50%); opacity: 0; }
-    8%, 65% { opacity: 1; }
-    to { transform: translate(var(--spark-x), var(--spark-y)); opacity: 0; }
+    5% { opacity: 1; }
+    65% { transform: translate(calc(var(--spark-x) * .9), var(--spark-y)); opacity: 1; }
+    to { transform: translate(var(--spark-x), calc(var(--spark-y) + 140px)); opacity: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
     .craft-spark, .craft-grid.is-mistake, .craft-effect-layer[data-result="incorrect"] { animation: none; }
