@@ -88,6 +88,13 @@ Kör tester med `.\mvnw.cmd test`.
 
 ## Backendens ansvarsfördelning
 
+Debugknappen `>_` uppe till vänster öppnar tre testfunktioner: rätt crafting-svar,
+fel crafting-svar och fullbordad pågående Stack. De använder samma backendregler,
+framsteg, timer och frontend-effekter som vanligt spel. `POST /api/crafting/debug`
+tar `{challengeId, action}` där action är `SUCCESS`, `FAILURE` eller `COMPLETE_STACK`.
+Funktionerna gäller bara den egna webbläsarsessionen. Menyn ligger i
+`debug-menu.js` och `debug-menu.css`.
+
 - `CraftingController` tar emot HTTP-anrop, kopplar dem till rätt webbläsarsession och översätter fel till befintliga HTTP-statuskoder.
 - `CraftingService` väljer målföremål, hanterar sökning/sidindelning och bedömer spelarens försök. Den arbetar med en spelmodell och använder inte HTTP-sessioner.
 - `CraftingSession` är en vanlig Java-klass för en spelares aktuella utmaning, status (`NOT_STARTED`, `ACTIVE`, `SOLVED`, `REVEALED`), senaste försöksresultat och eventuellt avslöjat facit. Ett identiskt inskickat försök ger samma resultat igen så länge facit inte avslöjats. En löst eller avslöjad utmaning kan inte ändras med ett nytt försök; en ny utmaning återställer statusen.

@@ -12,9 +12,19 @@
     <link rel="stylesheet" href="/crafting.css?v=20261112-5">
     <link rel="stylesheet" href="/crafting-effects.css?v=stack-1">
     <link rel="stylesheet" href="/stack.css?v=stack-1">
-    <script src="/crafting.js?v=stack-1" type="module"></script>
+    <link rel="stylesheet" href="/debug-menu.css?v=1">
+    <script src="/crafting.js?v=debug-1" type="module"></script>
 </head>
 <body>
+    <div id="debug-tools" class="debug-tools">
+        <button id="debug-toggle" class="debug-toggle" type="button" aria-label="Debug menu" aria-expanded="false" aria-controls="debug-menu"><span aria-hidden="true">&gt;_</span></button>
+        <section id="debug-menu" class="panel debug-menu" aria-labelledby="debug-title" hidden>
+            <h2 id="debug-title">Debug</h2>
+            <button id="debug-success" class="secondary" type="button" disabled>Craft successfully</button>
+            <button id="debug-failure" class="secondary" type="button" disabled>Fail crafting</button>
+            <button id="debug-complete" class="secondary" type="button" disabled>Complete The Stack</button>
+        </section>
+    </div>
     <header class="site-header">
         <a class="brand" href="/">MASTER<span>CRAFTER</span></a>
         <nav class="mode-nav" aria-label="Game mode"><a href="/" aria-current="page">Crafting</a><a href="/quiz.html">Item quiz</a></nav>

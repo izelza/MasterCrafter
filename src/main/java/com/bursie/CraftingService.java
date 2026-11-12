@@ -2,6 +2,7 @@ package com.bursie;
 
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -128,6 +129,31 @@ public class CraftingService {
             return gameState(game);
         }
     }
+
+    // Debug actions use the real attempt flow, including Stack progress and the stopwatch.
+    public DebugResult debug(CraftingSession game, String challengeId, DebugAction action) {
+        synchronized (game) {
+            if (game.challenge() == null || !game.challenge().id().equals(challengeId)) {
+                throw new IllegalStateException("The current recipe has changed. Try again.");
+            }
+            if (action == DebugAction.COMPLETE_STACK) {
+                if (game.stack() == null) throw new IllegalStateException("Start The Stack first.");
+                while (game.stack().running()) {
+                    if (game.status() == CraftingSession.Status.SOLVED) newChallenge(game);
+                    var recipe = recipes.recipesFor(game.challenge().target().id()).getFirst();
+                    attempt(game, game.challenge().id(), recipe.exampleGrid());
+                }
+                return new DebugResult(null, gameState(game));
+            }
+            var recipe = recipes.recipesFor(game.challenge().target().id()).getFirst();
+            var result = attempt(game, challengeId, action == DebugAction.SUCCESS
+                    ? recipe.exampleGrid() : Collections.nCopies(9, null));
+            return new DebugResult(result, gameState(game));
+        }
+    }
+
+    public enum DebugAction { SUCCESS, FAILURE, COMPLETE_STACK }
+    public record DebugResult(CraftingSession.AttemptResult result, GameSnapshot game) {}
 
     private static CraftingSession.Challenge challengeFor(ItemCatalog.Item target) {
         return new CraftingSession.Challenge(UUID.randomUUID().toString(), target);

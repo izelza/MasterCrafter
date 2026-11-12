@@ -4,6 +4,7 @@ import { setupInventory } from './inventory.js?v=20261112-5';
 import { setupCraftingEffects } from './crafting-effects.js?v=stack-1';
 import { setupStackPanel } from './stack.js?v=stack-1';
 import { request } from './game-api.js';
+import { setupDebugMenu } from './debug-menu.js?v=1';
 
 const element = id => document.getElementById(id);
 const grid = Array(9).fill(null);
@@ -22,6 +23,7 @@ const { finishPainting } = setupCraftingInput({
 const effects = setupCraftingEffects(gridElement, element('craft'));
 const inventory = setupInventory({ request, createIcon: icon, onSelect: selectItem });
 const stackPanel = setupStackPanel({ onStart: () => changeMode('start'), onStop: () => changeMode('stop') });
+const debugMenu = setupDebugMenu({ onAction: debugAction, onOpen: () => selectItem(null) });
 
 function feedback(message, type = '') {
     element('craft-feedback').className = `feedback ${type}`;
@@ -58,6 +60,7 @@ function refreshGrid() {
     element('new-recipe').textContent = recoveryNeeded ? 'Retry connection' : !challenge ? 'New recipe'
         : showingSolution ? 'Next recipe \u2192' : solutionRequested ? 'Retry reveal' : 'Skip recipe';
     stackPanel.setBusy(working);
+    debugMenu.render({ canAttempt: canEditGrid(), canComplete: !working && !recoveryNeeded && stackState.status === 'RUNNING' });
 }
 
 function changeCell(index, item) {
@@ -182,19 +185,46 @@ async function craft() {
         const result = await request('/api/crafting/attempts', {
             challengeId: challenge.id, grid: grid.map(item => item?.id ?? null)
         });
-        solved = result.correct;
-        feedback(result.message, result.correct ? 'success' : 'error');
-        if (result.correct && stackState.status === 'RUNNING') {
-            const state = await request('/api/crafting/game');
-            applyGame(state, result.message);
-            if (state.stack.status === 'COMPLETE') effects.celebrateStack();
-            else {
-                effects.play(true);
-                nextMessage = result.message;
-            }
+        nextMessage = await showAttempt(result);
+    } catch {
+        await recoverGame();
+    } finally {
+        working = false;
+        refreshGrid();
+    }
+    if (nextMessage) await newChallenge(nextMessage);
+}
+
+async function showAttempt(result, state = null) {
+    solved = result.correct;
+    feedback(result.message, result.correct ? 'success' : 'error');
+    if (result.correct && stackState.status === 'RUNNING') {
+        state ??= await request('/api/crafting/game');
+        applyGame(state, result.message);
+        if (state.stack.status === 'COMPLETE') {
+            effects.celebrateStack();
+            return null;
+        }
+    }
+    effects.play(result.correct);
+    return result.correct ? result.message : null;
+}
+
+async function debugAction(action) {
+    const complete = action === 'COMPLETE_STACK';
+    if (working || recoveryNeeded || !challenge || (complete ? stackState.status !== 'RUNNING' : !canEditGrid())) return;
+    working = true;
+    finishPainting();
+    selectItem(null);
+    refreshGrid();
+    let nextMessage = null;
+    try {
+        const response = await request('/api/crafting/debug', { challengeId: challenge.id, action });
+        if (complete) {
+            applyGame(response.game);
+            effects.celebrateStack();
         } else {
-            effects.play(result.correct);
-            if (result.correct) nextMessage = result.message;
+            nextMessage = await showAttempt(response.result, response.game);
         }
     } catch {
         await recoverGame();
