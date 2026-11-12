@@ -10,8 +10,9 @@
     <link rel="stylesheet" href="/minecraft-theme.css">
     <link rel="stylesheet" href="/style.css?v=20261112-2">
     <link rel="stylesheet" href="/crafting.css?v=20261112-5">
-    <link rel="stylesheet" href="/crafting-effects.css?v=20261112-4">
-    <script src="/crafting.js?v=20261112-5" type="module"></script>
+    <link rel="stylesheet" href="/crafting-effects.css?v=stack-1">
+    <link rel="stylesheet" href="/stack.css?v=stack-1">
+    <script src="/crafting.js?v=stack-1" type="module"></script>
 </head>
 <body>
     <header class="site-header">
@@ -19,10 +20,28 @@
         <nav class="mode-nav" aria-label="Game mode"><a href="/" aria-current="page">Crafting</a><a href="/quiz.html">Item quiz</a></nav>
     </header>
     <main>
-        <div class="crafting-heading">
-            <p class="eyebrow">FROM INGREDIENT TO ITEM</p>
-            <h1>Time to craft.</h1>
-            <p class="intro">Choose an ingredient. Fill the grid. Do you know the recipe?</p>
+        <div class="game-topbar">
+            <div class="crafting-heading">
+                <p class="eyebrow">FROM INGREDIENT TO ITEM</p>
+                <h1>Time to craft.</h1>
+                <p class="intro">Choose an ingredient. Fill the grid. Do you know the recipe?</p>
+            </div>
+            <section id="stack-panel" class="panel stack-panel" aria-labelledby="stack-title">
+                <div class="stack-heading">
+                    <h2 id="stack-title">The Stack</h2>
+                    <output id="stack-timer" class="stack-timer" role="timer" aria-label="Elapsed time" aria-live="off">00:00.0</output>
+                </div>
+                <div class="stack-actions">
+                    <button id="stack-start" type="button" class="next" disabled>Start The Stack</button>
+                    <button id="stack-stop" type="button" class="secondary" disabled>Stop / Reset</button>
+                </div>
+                <p id="stack-status" class="stack-status" role="status">64 targets. One stack. Ready when you are.</p>
+                <progress id="stack-progress" class="stack-progress" aria-label="Stack progress" max="64" value="0" hidden></progress>
+                <details id="stack-details" class="stack-details" hidden>
+                    <summary>Show checklist</summary>
+                    <ol id="stack-checklist" class="stack-checklist" aria-label="Stack recipes"></ol>
+                </details>
+            </section>
         </div>
         <div class="crafting-layout">
             <section class="panel" aria-labelledby="craft-title">

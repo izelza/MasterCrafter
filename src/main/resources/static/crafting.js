@@ -1,7 +1,9 @@
 import { setupCraftingInput } from './crafting-input.js?v=20261112-2';
 import { setHeldItemCursor } from './item-cursor.js';
 import { setupInventory } from './inventory.js?v=20261112-5';
-import { setupCraftingEffects } from './crafting-effects.js?v=20261112-4';
+import { setupCraftingEffects } from './crafting-effects.js?v=stack-1';
+import { setupStackPanel } from './stack.js?v=stack-1';
+import { request } from './game-api.js';
 
 const element = id => document.getElementById(id);
 const grid = Array(9).fill(null);
@@ -11,32 +13,15 @@ let solved = false;
 let working = false;
 let showingSolution = false;
 let solutionRequested = false;
+let recoveryNeeded = false;
+let stackState = { status: 'INACTIVE' };
 const gridElement = element('craft-grid');
 const { finishPainting } = setupCraftingInput({
     gridElement, canEdit: canEditGrid, getSelected: () => selected, getCell: index => grid[index], onCellChange: changeCell
 });
 const effects = setupCraftingEffects(gridElement, element('craft'));
 const inventory = setupInventory({ request, createIcon: icon, onSelect: selectItem });
-async function request(url, body) {
-    let response;
-    try {
-        response = await fetch(url, body === undefined ? {} : {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body)
-        });
-    } catch {
-        throw new Error('Could not reach the game. Check that the server is running and try again.');
-    }
-    if (!response.ok) {
-        if (response.status === 409) {
-            challenge = null;
-            throw new Error('This recipe is no longer active. Click New recipe.');
-        }
-        throw new Error('Something went wrong. Try again or get a new recipe.');
-    }
-    return response.json();
-}
+const stackPanel = setupStackPanel({ onStart: () => changeMode('start'), onStop: () => changeMode('stop') });
 
 function feedback(message, type = '') {
     element('craft-feedback').className = `feedback ${type}`;
@@ -44,16 +29,20 @@ function feedback(message, type = '') {
 }
 
 function icon(item) {
-    const img = document.createElement('img');
-    img.src = item.iconUrl;
-    img.alt = '';
-    img.draggable = false;
-    return img;
+    const image = document.createElement('img');
+    image.src = item.iconUrl;
+    image.alt = '';
+    image.draggable = false;
+    return image;
+}
+
+function canEditGrid() {
+    return !working && !solved && !solutionRequested && !recoveryNeeded && !!challenge && stackState.status !== 'COMPLETE';
 }
 
 function refreshGrid() {
     gridElement.classList.toggle('is-solution', showingSolution);
-    [...element('craft-grid').children].forEach((button, index) => {
+    [...gridElement.children].forEach((button, index) => {
         const item = grid[index];
         button.replaceChildren();
         if (item) button.append(icon(item));
@@ -63,13 +52,12 @@ function refreshGrid() {
         button.disabled = !canEditGrid();
     });
     element('craft').disabled = !canEditGrid() || grid.every(item => !item);
-    element('new-recipe').disabled = working;
-    element('new-recipe').textContent = !challenge ? 'New recipe'
-        : showingSolution ? 'Next recipe →' : solutionRequested ? 'Retry reveal' : 'Skip recipe';
-}
-
-function canEditGrid() {
-    return !working && !solved && !solutionRequested && !!challenge;
+    const inStack = stackState.status !== 'INACTIVE';
+    element('new-recipe').disabled = working || (inStack && !recoveryNeeded);
+    element('new-recipe').title = inStack ? 'Finish this recipe or Stop The Stack to return to free play.' : '';
+    element('new-recipe').textContent = recoveryNeeded ? 'Retry connection' : !challenge ? 'New recipe'
+        : showingSolution ? 'Next recipe \u2192' : solutionRequested ? 'Retry reveal' : 'Skip recipe';
+    stackPanel.setBusy(working);
 }
 
 function changeCell(index, item) {
@@ -86,6 +74,77 @@ function selectItem(item) {
     inventory.setSelected(item);
 }
 
+function applyGame(state, previousSuccess = null) {
+    if (challenge?.id !== state.challenge?.id) {
+        finishPainting();
+        grid.fill(null);
+        selectItem(null);
+    }
+    challenge = state.challenge;
+    solved = state.status === 'SOLVED';
+    showingSolution = state.status === 'REVEALED';
+    solutionRequested = showingSolution;
+    recoveryNeeded = false;
+    stackState = state.stack;
+    stackPanel.render(stackState);
+    if (challenge) {
+        element('target-name').textContent = challenge.target.name;
+        element('target-icon').src = challenge.target.iconUrl;
+        element('target-icon').hidden = false;
+    }
+    if (showingSolution) grid.splice(0, grid.length, ...state.solution.grid);
+    if (stackState.status === 'COMPLETE') {
+        selectItem(null);
+        feedback(`The Stack is complete! All ${stackState.total} recipes crafted.`, 'success');
+    } else if (showingSolution) {
+        feedback(state.solution.message);
+    } else {
+        feedback(previousSuccess ?? 'Place your ingredients and click Craft!', previousSuccess ? 'success' : '');
+    }
+}
+
+// Restore the current server session on reload or after a lost HTTP response.
+async function playableGame() {
+    let state = await request('/api/crafting/game');
+    let success = null;
+    if (!state.challenge || (state.status === 'SOLVED' && state.stack.status !== 'COMPLETE')) {
+        if (state.challenge) success = `Correct! You crafted ${state.challenge.target.name}.`;
+        await request('/api/crafting/challenges', {});
+        state = await request('/api/crafting/game');
+    }
+    return { state, success };
+}
+
+async function recoverGame() {
+    try {
+        const { state, success } = await playableGame();
+        const justCompleted = stackState.status === 'RUNNING' && state.stack.status === 'COMPLETE';
+        applyGame(state, success);
+        if (justCompleted) effects.celebrateStack();
+        else if (success) effects.play(true);
+        else if (!showingSolution && stackState.status !== 'COMPLETE') feedback('Your game was restored. Continue crafting.');
+    } catch {
+        recoveryNeeded = true;
+        feedback('Could not reach the game. Click Retry connection or reload the page.', 'error');
+    }
+}
+
+async function restoreGame() {
+    if (working) return;
+    working = true;
+    refreshGrid();
+    try {
+        const { state, success } = await playableGame();
+        applyGame(state, success);
+    } catch {
+        recoveryNeeded = true;
+        feedback('Could not load the game. Click Retry connection to try again.', 'error');
+    } finally {
+        working = false;
+        refreshGrid();
+    }
+}
+
 async function newChallenge(previousSuccess = null) {
     if (working) return;
     if (!previousSuccess) effects.clear();
@@ -97,19 +156,15 @@ async function newChallenge(previousSuccess = null) {
     challenge = null;
     grid.fill(null);
     selectItem(null);
-    element('target-name').textContent = 'Loading recipe…';
+    element('target-name').textContent = 'Loading recipe\u2026';
     element('target-icon').hidden = true;
-    feedback(previousSuccess ?? 'Loading recipe…', previousSuccess ? 'success' : '');
+    feedback(previousSuccess ?? 'Loading recipe\u2026', previousSuccess ? 'success' : '');
     refreshGrid();
     try {
-        challenge = await request('/api/crafting/challenges', {});
-        element('target-name').textContent = challenge.target.name;
-        element('target-icon').src = challenge.target.iconUrl;
-        element('target-icon').hidden = false;
-        feedback(previousSuccess ?? 'Place your ingredients and click Craft!', previousSuccess ? 'success' : '');
-    } catch (error) {
-        element('target-name').textContent = 'Could not load the recipe';
-        feedback(error.message, 'error');
+        await request('/api/crafting/challenges', {});
+        applyGame(await request('/api/crafting/game'), previousSuccess);
+    } catch {
+        await recoverGame();
     } finally {
         working = false;
         refreshGrid();
@@ -120,47 +175,72 @@ async function craft() {
     if (!canEditGrid() || grid.every(item => !item)) return;
     finishPainting();
     working = true;
-    let nextRecipeMessage = null;
+    let nextMessage = null;
     refreshGrid();
-    feedback('Checking your recipe…');
+    feedback('Checking your recipe\u2026');
     try {
         const result = await request('/api/crafting/attempts', {
-            challengeId: challenge.id,
-            grid: grid.map(item => item?.id ?? null)
+            challengeId: challenge.id, grid: grid.map(item => item?.id ?? null)
         });
         solved = result.correct;
         feedback(result.message, result.correct ? 'success' : 'error');
-        effects.play(result.correct);
-        if (result.correct) nextRecipeMessage = result.message;
-    } catch (error) {
-        feedback(error.message, 'error');
+        if (result.correct && stackState.status === 'RUNNING') {
+            const state = await request('/api/crafting/game');
+            applyGame(state, result.message);
+            if (state.stack.status === 'COMPLETE') effects.celebrateStack();
+            else {
+                effects.play(true);
+                nextMessage = result.message;
+            }
+        } else {
+            effects.play(result.correct);
+            if (result.correct) nextMessage = result.message;
+        }
+    } catch {
+        await recoverGame();
     } finally {
         working = false;
-        if (!nextRecipeMessage) refreshGrid();
+        refreshGrid();
     }
-    if (nextRecipeMessage) await newChallenge(nextRecipeMessage);
+    if (nextMessage) await newChallenge(nextMessage);
 }
 
 async function skipRecipe() {
     if (working) return;
+    if (recoveryNeeded) return restoreGame();
+    if (stackState.status !== 'INACTIVE') return;
     effects.clear();
-    if (!challenge || showingSolution) {
-        await newChallenge();
-        return;
-    }
+    if (!challenge || showingSolution) return newChallenge();
     finishPainting();
     working = true;
     solutionRequested = true;
     selectItem(null);
     refreshGrid();
-    feedback('Loading the correct recipe…');
+    feedback('Loading the correct recipe\u2026');
     try {
-        const solution = await request(`/api/crafting/challenges/${encodeURIComponent(challenge.id)}/solution`, {});
-        grid.splice(0, grid.length, ...solution.grid);
-        showingSolution = true;
-        feedback(solution.message);
-    } catch (error) {
-        feedback(error.message, 'error');
+        await request(`/api/crafting/challenges/${encodeURIComponent(challenge.id)}/solution`, {});
+        applyGame(await request('/api/crafting/game'));
+    } catch {
+        await recoverGame();
+    } finally {
+        working = false;
+        refreshGrid();
+    }
+}
+
+async function changeMode(action) {
+    if (working) return;
+    working = true;
+    finishPainting();
+    selectItem(null);
+    effects.clear();
+    refreshGrid();
+    feedback(action === 'start' ? 'Building The Stack\u2026' : 'Returning to free play\u2026');
+    try {
+        const state = await request(`/api/crafting/stack/${action}`, {});
+        applyGame(state, action === 'start' ? 'The Stack has started. Craft every target!' : null);
+    } catch {
+        await recoverGame();
     } finally {
         working = false;
         refreshGrid();
@@ -169,5 +249,8 @@ async function skipRecipe() {
 
 element('craft').addEventListener('click', craft);
 element('new-recipe').addEventListener('click', skipRecipe);
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && stackState.status === 'RUNNING' && !working) restoreGame();
+});
 refreshGrid();
-newChallenge();
+restoreGame();

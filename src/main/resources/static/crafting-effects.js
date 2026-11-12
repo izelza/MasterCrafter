@@ -6,13 +6,50 @@ export function setupCraftingEffects(grid, craftButton) {
     grid.parentElement.append(layer);
     const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
     let cleanupTimer;
+    let celebration;
+    let celebrationTimer;
 
     function clear() {
         clearTimeout(cleanupTimer);
+        clearTimeout(celebrationTimer);
+        celebration?.remove();
+        celebration = null;
         layer.replaceChildren();
         delete layer.dataset.result;
         grid.classList.remove('is-mistake');
         if (layer.parentElement !== grid.parentElement) grid.parentElement.append(layer);
+    }
+
+    function celebrateStack() {
+        clear();
+        if (reducedMotion.matches || document.hidden) return;
+        celebration = document.createElement('div');
+        celebration.className = 'stack-celebration';
+        celebration.setAttribute('aria-hidden', 'true');
+        const colors = ['#80d65b', '#f4d56b', '#c4ef95', '#fff2aa'];
+        for (let burst = 0; burst < 3; burst++) {
+            const center = .25 + burst * .25;
+            const spread = Math.min(170, innerWidth * center - 12, innerWidth * (1 - center) - 12);
+            for (let index = 0; index < 24; index++) {
+                const spark = document.createElement('i');
+                spark.className = 'craft-spark stack-spark';
+                const angle = index / 24 * Math.PI * 2;
+                const distance = .7 + Math.random() * .3;
+                spark.style.left = `${center * 100}%`;
+                spark.style.top = burst === 1 ? '32%' : '42%';
+                spark.style.setProperty('--spark-x', `${Math.cos(angle) * spread * distance}px`);
+                spark.style.setProperty('--spark-y', `${Math.sin(angle) * 150 * distance + 70}px`);
+                spark.style.setProperty('--spark-color', colors[index % colors.length]);
+                spark.style.setProperty('--spark-size', index % 3 === 0 ? '8px' : '5px');
+                spark.style.animationDelay = `${burst * 280 + index % 3 * 20}ms`;
+                celebration.append(spark);
+            }
+        }
+        document.body.append(celebration);
+        celebrationTimer = setTimeout(() => {
+            celebration?.remove();
+            celebration = null;
+        }, 2200);
     }
 
     function play(correct) {
@@ -49,5 +86,5 @@ export function setupCraftingEffects(grid, craftButton) {
     reducedMotion.addEventListener('change', clear);
     window.addEventListener('resize', clear);
     document.addEventListener('visibilitychange', () => { if (document.hidden) clear(); });
-    return { play, clear };
+    return { play, clear, celebrateStack };
 }

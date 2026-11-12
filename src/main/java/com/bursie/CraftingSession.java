@@ -13,6 +13,15 @@ public class CraftingSession {
     private List<String> lastGrid;
     private AttemptResult lastResult;
     private Solution solution;
+    private StackRun stack;
+
+    public StackRun stack() {
+        return stack;
+    }
+
+    void setStack(StackRun stack) {
+        this.stack = stack;
+    }
 
     public Challenge challenge() {
         return challenge;

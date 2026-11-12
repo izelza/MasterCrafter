@@ -11,11 +11,13 @@ public class CraftingService {
     private final ItemCatalog items;
     private final RecipeCatalog recipes;
     private final List<String> targets;
+    private final StackPlanner stackPlanner;
 
     public CraftingService(ItemCatalog items, RecipeCatalog recipes) {
         this.items = items;
         this.recipes = recipes;
         targets = recipes.targetIds();
+        stackPlanner = new StackPlanner(items, recipes);
     }
 
     public ItemPage searchItems(String query, int page) {
@@ -31,12 +33,19 @@ public class CraftingService {
 
     public CraftingSession.Challenge newChallenge(CraftingSession game) {
         synchronized (game) {
+            if (game.stack() != null) {
+                // Repeating Next cannot bypass an unsolved target or start free play after completion.
+                if (!game.stack().running() || game.status() != CraftingSession.Status.SOLVED) return game.challenge();
+                var next = challengeFor(game.stack().current().target());
+                game.start(next);
+                return next;
+            }
             var previous = game.challenge();
             String target;
             do {
                 target = targets.get(ThreadLocalRandom.current().nextInt(targets.size()));
             } while (targets.size() > 1 && previous != null && previous.target().id().equals(target));
-            var challenge = new CraftingSession.Challenge(UUID.randomUUID().toString(), items.find(target));
+            var challenge = challengeFor(items.find(target));
             game.start(challenge);
             return challenge;
         }
@@ -65,12 +74,16 @@ public class CraftingService {
                     ? "Correct! You crafted " + challenge.target().name() + "."
                     : "Not quite! Change the ingredients or their positions and try again.");
             game.recordAttempt(grid, result);
+            if (correct && game.stack() != null && game.stack().running()) {
+                game.stack().markSolved(challenge.target().id());
+            }
             return result;
         }
     }
 
     public CraftingSession.Solution reveal(CraftingSession game, String challengeId) {
         synchronized (game) {
+            if (game.stack() != null) throw new IllegalStateException("Finish the current recipe or stop The Stack to use Skip.");
             var challenge = game.challenge();
             if (challenge == null || !challenge.id().equals(challengeId)
                     || game.status() == CraftingSession.Status.SOLVED) {
@@ -86,5 +99,41 @@ public class CraftingService {
         }
     }
 
+    public GameSnapshot gameState(CraftingSession game) {
+        synchronized (game) {
+            return new GameSnapshot(game.challenge(), game.status(), game.solution(),
+                    game.stack() == null ? StackRun.Snapshot.inactive() : game.stack().snapshot());
+        }
+    }
+
+    public GameSnapshot startStack(CraftingSession game) {
+        synchronized (game) {
+            // Safe retry if Start was already processed but its HTTP response was lost.
+            if (game.stack() != null && game.stack().running()) return gameState(game);
+            var stack = stackPlanner.create();
+            game.setStack(stack);
+            game.start(challengeFor(stack.current().target()));
+            return gameState(game);
+        }
+    }
+
+    public GameSnapshot stopStack(CraftingSession game) {
+        synchronized (game) {
+            if (game.stack() != null) {
+                game.setStack(null);
+                newChallenge(game);
+            } else if (game.challenge() == null) {
+                newChallenge(game);
+            }
+            return gameState(game);
+        }
+    }
+
+    private static CraftingSession.Challenge challengeFor(ItemCatalog.Item target) {
+        return new CraftingSession.Challenge(UUID.randomUUID().toString(), target);
+    }
+
+    public record GameSnapshot(CraftingSession.Challenge challenge, CraftingSession.Status status,
+                               CraftingSession.Solution solution, StackRun.Snapshot stack) {}
     public record ItemPage(List<ItemCatalog.Item> items, int total, int page, int pages) {}
 }

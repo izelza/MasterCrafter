@@ -1,0 +1,31 @@
+.game-topbar { display: grid; grid-template-columns: 390px minmax(0, 1fr); gap: 24px; align-items: center; margin-bottom: 24px; }
+.game-topbar .crafting-heading { margin: 0; }
+.stack-panel.panel { padding: 16px 20px; }
+.stack-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; }
+.stack-timer { font-size: 1.4rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.stack-actions { display: flex; gap: 10px; }
+.stack-actions button { padding: 10px 12px; font-size: .9rem; white-space: nowrap; }
+.stack-actions .next { flex: 1; }
+.stack-status { font-size: .8rem; line-height: 1.5; margin: 10px 0 0; min-height: 1.5em; }
+.stack-panel[data-status="COMPLETE"] .stack-status { color: #187132; }
+.stack-progress { display: block; width: 100%; height: 10px; margin-top: 10px; border: 2px solid var(--mc-inset-shadow); background: var(--mc-slot); appearance: none; }
+.stack-progress::-webkit-progress-bar { background: var(--mc-slot); }
+.stack-progress::-webkit-progress-value { background: #187132; }
+.stack-progress::-moz-progress-bar { background: #187132; }
+.stack-details { margin-top: 10px; font-size: .8rem; }
+.stack-details summary { cursor: pointer; padding: 4px 0; }
+.stack-checklist { list-style: none; padding: 0; margin: 8px 0 0; max-height: 180px; overflow-y: auto; }
+.stack-checklist li { display: flex; align-items: center; gap: 8px; padding: 4px 0; min-height: 30px; }
+.stack-checklist img { width: 24px; height: 24px; image-rendering: pixelated; }
+.stack-check { width: 18px; height: 18px; border: 2px solid var(--mc-inset-shadow); display: grid; place-items: center; flex: none; line-height: 1; }
+.is-complete .stack-check { color: white; background: #187132; }
+.is-complete .stack-name { text-decoration: line-through; color: var(--mc-inset-shadow); }
+.is-current .stack-name { text-decoration: underline; }
+@media (max-width: 900px) {
+    .game-topbar { grid-template-columns: minmax(280px, .9fr) minmax(0, 1fr); gap: 16px; }
+    .stack-panel.panel { padding: 14px; }
+}
+@media (max-width: 650px) {
+    .game-topbar { grid-template-columns: 1fr; }
+    .stack-timer { font-size: 1.2rem; }
+}

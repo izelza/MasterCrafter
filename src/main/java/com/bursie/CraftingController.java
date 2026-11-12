@@ -2,6 +2,8 @@ package com.bursie;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.CacheControl;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -29,6 +31,21 @@ public class CraftingController {
     @PostMapping("/api/crafting/challenges")
     public CraftingSession.Challenge newChallenge(HttpSession session) {
         return crafting.newChallenge(gameSession(session));
+    }
+
+    @GetMapping("/api/crafting/game")
+    public ResponseEntity<CraftingService.GameSnapshot> state(HttpSession session) {
+        return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(crafting.gameState(gameSession(session)));
+    }
+
+    @PostMapping("/api/crafting/stack/start")
+    public CraftingService.GameSnapshot startStack(HttpSession session) {
+        return crafting.startStack(gameSession(session));
+    }
+
+    @PostMapping("/api/crafting/stack/stop")
+    public CraftingService.GameSnapshot stopStack(HttpSession session) {
+        return crafting.stopStack(gameSession(session));
     }
 
     @PostMapping("/api/crafting/attempts")

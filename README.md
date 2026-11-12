@@ -2,6 +2,9 @@
 
 Källkod och utvecklingshistorik finns på [GitHub: izelza/MasterCrafter](https://github.com/izelza/MasterCrafter).
 
+**The Stack:** en tidsatt omgång med 64 unika mål, start/stopp och checklista.
+Se [spelläge och API](docs/THE-STACK.md) och [presentation/reservstart](PRESENTATION.md).
+
 ## Starta i IntelliJ
 
 1. Läs in `pom.xml` som Maven-projekt (Reload All Maven Projects).

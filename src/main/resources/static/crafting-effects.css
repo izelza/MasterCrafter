@@ -37,6 +37,13 @@
     from { opacity: 1; }
     to { opacity: 0; }
 }
+.stack-celebration { position: fixed; inset: 0; z-index: 900; overflow: hidden; pointer-events: none; }
+.stack-spark { animation: stack-spark 1400ms ease-out both; }
+@keyframes stack-spark {
+    from { transform: translate(-50%, -50%); opacity: 0; }
+    8%, 65% { opacity: 1; }
+    to { transform: translate(var(--spark-x), var(--spark-y)); opacity: 0; }
+}
 @media (prefers-reduced-motion: reduce) {
     .craft-spark, .craft-grid.is-mistake, .craft-effect-layer[data-result="incorrect"] { animation: none; }
 }
