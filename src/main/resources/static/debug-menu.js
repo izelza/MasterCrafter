@@ -1,10 +1,11 @@
-export function setupDebugMenu({ onAction, onOpen }) {
+export function setupDebugMenu({ onAction, onOpen, onSelectTarget }) {
     const tools = document.getElementById('debug-tools');
     const toggle = document.getElementById('debug-toggle');
     const menu = document.getElementById('debug-menu');
     const success = document.getElementById('debug-success');
     const failure = document.getElementById('debug-failure');
     const complete = document.getElementById('debug-complete');
+    const target = document.getElementById('debug-target');
 
     function close(restoreFocus = false) {
         menu.hidden = true;
@@ -36,11 +37,18 @@ export function setupDebugMenu({ onAction, onOpen }) {
             onAction(action);
         });
     }
+    target.addEventListener('click', () => {
+        close(true);
+        onSelectTarget();
+    });
     return {
-        render({ canAttempt, canComplete }) {
+        render({ canAttempt, canComplete, canSelectTarget, selectingTarget }) {
             success.disabled = failure.disabled = !canAttempt;
             complete.disabled = !canComplete;
             complete.title = canComplete ? 'Finish the running Stack and show its celebration.' : 'Start The Stack first.';
+            target.disabled = !canSelectTarget;
+            target.textContent = selectingTarget ? 'Cancel target selection' : 'Select target item';
+            target.title = canSelectTarget ? 'Choose the next target by clicking an inventory item.' : 'Stop The Stack before choosing a target.';
         }
     };
 }

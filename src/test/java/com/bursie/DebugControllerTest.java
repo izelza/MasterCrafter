@@ -89,6 +89,58 @@ class DebugControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    void choosingTargetReplacesRevealedChallengeAndAcceptsItsActualRecipe() throws Exception {
+        var session = new MockHttpSession();
+        var original = mapper.readTree(mvc.perform(post("/api/crafting/challenges").session(session))
+                .andReturn().getResponse().getContentAsByteArray());
+        String oldId = original.get("id").asText();
+        mvc.perform(post("/api/crafting/challenges/" + oldId + "/solution").session(session)).andExpect(status().isOk());
+        var selected = mapper.readTree(mvc.perform(post("/api/crafting/debug/target").session(session)
+                        .contentType(MediaType.APPLICATION_JSON).content(targetCommand(oldId, "minecraft:stick")))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.challenge.target.id").value("minecraft:stick"))
+                .andExpect(jsonPath("$.status").value("ACTIVE")).andExpect(jsonPath("$.solution").isEmpty())
+                .andReturn().getResponse().getContentAsByteArray());
+        var id = selected.at("/challenge/id").asText();
+        assertThat(id).isNotEqualTo(oldId);
+        mvc.perform(post("/api/crafting/attempts").session(session).contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(Map.of("challengeId", id, "grid", java.util.Arrays.asList(
+                                "minecraft:oak_planks", null, null, "minecraft:oak_planks", null, null, null, null, null)))))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.correct").value(true));
+        mvc.perform(post("/api/crafting/debug/target").session(new MockHttpSession())
+                .contentType(MediaType.APPLICATION_JSON).content(targetCommand(id, "minecraft:stick")))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void invalidOrStaleTargetsAndStackChangesAreRejectedWithoutChangingTheGame() throws Exception {
+        var session = new MockHttpSession();
+        var original = mapper.readTree(mvc.perform(post("/api/crafting/challenges").session(session))
+                .andReturn().getResponse().getContentAsByteArray());
+        var id = original.get("id").asText();
+        for (String item : java.util.List.of("minecraft:flint", "minecraft:not_an_item", "minecraft:coast_armor_trim_smithing_template")) {
+            mvc.perform(post("/api/crafting/debug/target").session(session).contentType(MediaType.APPLICATION_JSON)
+                    .content(targetCommand(id, item))).andExpect(status().isBadRequest());
+        }
+        mvc.perform(post("/api/crafting/debug/target").session(session).contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(Map.of("challengeId", id)))).andExpect(status().isBadRequest());
+        mvc.perform(post("/api/crafting/debug/target").session(session).contentType(MediaType.APPLICATION_JSON)
+                .content(targetCommand("stale-id", "minecraft:stick"))).andExpect(status().isConflict());
+        mvc.perform(get("/api/crafting/game").session(session)).andExpect(jsonPath("$.challenge.id").value(id));
+        var stack = start(session);
+        mvc.perform(post("/api/crafting/debug/target").session(session).contentType(MediaType.APPLICATION_JSON)
+                        .content(targetCommand(stack.at("/challenge/id").asText(), "minecraft:stick")))
+                .andExpect(status().isConflict());
+        var after = mapper.readTree(mvc.perform(get("/api/crafting/game").session(session))
+                .andReturn().getResponse().getContentAsByteArray());
+        assertThat(after.get("challenge")).isEqualTo(stack.get("challenge"));
+        assertThat(after.at("/stack/entries")).isEqualTo(stack.at("/stack/entries"));
+    }
+
+    private String targetCommand(String id, String item) throws Exception {
+        return mapper.writeValueAsString(Map.of("challengeId", id, "targetId", item));
+    }
+
     private JsonNode start(MockHttpSession session) throws Exception {
         return mapper.readTree(mvc.perform(post("/api/crafting/stack/start").session(session))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsByteArray());

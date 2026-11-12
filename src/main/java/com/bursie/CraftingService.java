@@ -130,6 +130,21 @@ public class CraftingService {
         }
     }
 
+    public GameSnapshot selectTarget(CraftingSession game, String challengeId, String targetId) {
+        synchronized (game) {
+            if (game.stack() != null) throw new IllegalStateException("Stop The Stack before choosing a target.");
+            if (game.challenge() == null || !game.challenge().id().equals(challengeId)) {
+                throw new IllegalStateException("The current recipe has changed. Try again.");
+            }
+            var target = targetId == null ? null : items.find(targetId);
+            if (target == null || !targets.contains(targetId)) {
+                throw new IllegalArgumentException("This item has no active crafting recipe. Choose another target.");
+            }
+            game.start(challengeFor(target));
+            return gameState(game);
+        }
+    }
+
     // Debug actions use the real attempt flow, including Stack progress and the stopwatch.
     public DebugResult debug(CraftingSession game, String challengeId, DebugAction action) {
         synchronized (game) {

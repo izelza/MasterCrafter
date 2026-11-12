@@ -80,6 +80,19 @@ public class CraftingController {
 
     public record DebugCommand(String challengeId, CraftingService.DebugAction action) {}
 
+    @PostMapping("/api/crafting/debug/target")
+    public CraftingService.GameSnapshot selectTarget(@RequestBody TargetCommand command, HttpSession session) {
+        try {
+            return crafting.selectTarget(gameSession(session), command.challengeId(), command.targetId());
+        } catch (IllegalArgumentException exception) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage());
+        } catch (IllegalStateException exception) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, exception.getMessage());
+        }
+    }
+
+    public record TargetCommand(String challengeId, String targetId) {}
+
     // HTTP-sessionen hör hemma i webblagret. Servicen får bara spelmodellen.
     private CraftingSession gameSession(HttpSession session) {
         synchronized (session) {

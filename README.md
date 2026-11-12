@@ -95,6 +95,12 @@ tar `{challengeId, action}` där action är `SUCCESS`, `FAILURE` eller `COMPLETE
 Funktionerna gäller bara den egna webbläsarsessionen. Menyn ligger i
 `debug-menu.js` och `debug-menu.css`.
 
+Select target item gör nästa inventoryklick till ett målval i vanlig crafting,
+utan att ta upp föremålet. Därefter fungerar inventoryt normalt igen. Sökning
+fungerar under valet; Escape avbryter. Backend kontrollerar att målet har ett
+aktivt crafting-recept via `POST /api/crafting/debug/target` med
+`{challengeId, targetId}`. Stoppa The Stack före ett eget målval.
+
 - `CraftingController` tar emot HTTP-anrop, kopplar dem till rätt webbläsarsession och översätter fel till befintliga HTTP-statuskoder.
 - `CraftingService` väljer målföremål, hanterar sökning/sidindelning och bedömer spelarens försök. Den arbetar med en spelmodell och använder inte HTTP-sessioner.
 - `CraftingSession` är en vanlig Java-klass för en spelares aktuella utmaning, status (`NOT_STARTED`, `ACTIVE`, `SOLVED`, `REVEALED`), senaste försöksresultat och eventuellt avslöjat facit. Ett identiskt inskickat försök ger samma resultat igen så länge facit inte avslöjats. En löst eller avslöjad utmaning kan inte ändras med ett nytt försök; en ny utmaning återställer statusen.

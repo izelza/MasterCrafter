@@ -4,7 +4,7 @@ import { setupInventory } from './inventory.js?v=20261112-5';
 import { setupCraftingEffects } from './crafting-effects.js?v=stack-2';
 import { setupStackPanel } from './stack.js?v=stack-1';
 import { request } from './game-api.js';
-import { setupDebugMenu } from './debug-menu.js?v=1';
+import { setupDebugMenu } from './debug-menu.js?v=2';
 
 const element = id => document.getElementById(id);
 const grid = Array(9).fill(null);
@@ -15,15 +15,16 @@ let working = false;
 let showingSolution = false;
 let solutionRequested = false;
 let recoveryNeeded = false;
+let selectingTarget = false;
 let stackState = { status: 'INACTIVE' };
 const gridElement = element('craft-grid');
 const { finishPainting } = setupCraftingInput({
     gridElement, canEdit: canEditGrid, getSelected: () => selected, getCell: index => grid[index], onCellChange: changeCell
 });
 const effects = setupCraftingEffects(gridElement, element('craft'));
-const inventory = setupInventory({ request, createIcon: icon, onSelect: selectItem });
+const inventory = setupInventory({ request, createIcon: icon, onSelect: chooseInventoryItem });
 const stackPanel = setupStackPanel({ onStart: () => changeMode('start'), onStop: () => changeMode('stop') });
-const debugMenu = setupDebugMenu({ onAction: debugAction, onOpen: () => selectItem(null) });
+const debugMenu = setupDebugMenu({ onAction: debugAction, onOpen: () => selectItem(null), onSelectTarget: toggleTargetSelection });
 
 function feedback(message, type = '') {
     element('craft-feedback').className = `feedback ${type}`;
@@ -39,7 +40,7 @@ function icon(item) {
 }
 
 function canEditGrid() {
-    return !working && !solved && !solutionRequested && !recoveryNeeded && !!challenge && stackState.status !== 'COMPLETE';
+    return !working && !selectingTarget && !solved && !solutionRequested && !recoveryNeeded && !!challenge && stackState.status !== 'COMPLETE';
 }
 
 function refreshGrid() {
@@ -60,7 +61,8 @@ function refreshGrid() {
     element('new-recipe').textContent = recoveryNeeded ? 'Retry connection' : !challenge ? 'New recipe'
         : showingSolution ? 'Next recipe \u2192' : solutionRequested ? 'Retry reveal' : 'Skip recipe';
     stackPanel.setBusy(working);
-    debugMenu.render({ canAttempt: canEditGrid(), canComplete: !working && !recoveryNeeded && stackState.status === 'RUNNING' });
+    debugMenu.render({ canAttempt: canEditGrid(), canComplete: !working && !recoveryNeeded && stackState.status === 'RUNNING',
+        canSelectTarget: !working && !recoveryNeeded && !!challenge && stackState.status === 'INACTIVE', selectingTarget });
 }
 
 function changeCell(index, item) {
@@ -77,7 +79,41 @@ function selectItem(item) {
     inventory.setSelected(item);
 }
 
+function toggleTargetSelection() {
+    if (working || recoveryNeeded || !challenge || stackState.status !== 'INACTIVE') return;
+    selectingTarget = !selectingTarget;
+    selectItem(null);
+    feedback(selectingTarget ? 'Click an inventory item to set your target. Escape cancels.'
+        : showingSolution ? 'Target selection cancelled. Click Next recipe to continue.' : 'Target selection cancelled. Continue crafting.');
+    refreshGrid();
+}
+
+function chooseInventoryItem(item) {
+    if (working) return;
+    if (selectingTarget && item) return selectTarget(item);
+    selectItem(item);
+}
+
+async function selectTarget(item) {
+    selectingTarget = false;
+    working = true;
+    selectItem(null);
+    effects.clear();
+    refreshGrid();
+    feedback(`Selecting ${item.name}\u2026`);
+    try {
+        applyGame(await request('/api/crafting/debug/target', { challengeId: challenge.id, targetId: item.id }));
+    } catch (error) {
+        if (error.status === 400) feedback(`${item.name} has no active crafting recipe. Select target item to try again.`, 'error');
+        else await recoverGame();
+    } finally {
+        working = false;
+        refreshGrid();
+    }
+}
+
 function applyGame(state, previousSuccess = null) {
+    selectingTarget = false;
     if (challenge?.id !== state.challenge?.id) {
         finishPainting();
         grid.fill(null);
@@ -150,6 +186,7 @@ async function restoreGame() {
 
 async function newChallenge(previousSuccess = null) {
     if (working) return;
+    selectingTarget = false;
     if (!previousSuccess) effects.clear();
     finishPainting();
     working = true;
@@ -237,6 +274,7 @@ async function debugAction(action) {
 
 async function skipRecipe() {
     if (working) return;
+    selectingTarget = false;
     if (recoveryNeeded) return restoreGame();
     if (stackState.status !== 'INACTIVE') return;
     effects.clear();
@@ -260,6 +298,7 @@ async function skipRecipe() {
 
 async function changeMode(action) {
     if (working) return;
+    selectingTarget = false;
     working = true;
     finishPainting();
     selectItem(null);
@@ -279,6 +318,12 @@ async function changeMode(action) {
 
 element('craft').addEventListener('click', craft);
 element('new-recipe').addEventListener('click', skipRecipe);
+document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && selectingTarget) {
+        event.preventDefault();
+        toggleTargetSelection();
+    }
+});
 document.addEventListener('visibilitychange', () => {
     if (!document.hidden && stackState.status === 'RUNNING' && !working) restoreGame();
 });
