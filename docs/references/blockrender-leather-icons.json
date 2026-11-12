@@ -1,0 +1,45 @@
+{
+  "downloaded": "2026-11-12",
+  "icons": [
+    {
+      "id": "minecraft:leather_boots",
+      "source": "https://blockrender.dev/render/item/leather_boots.png?size=64&download=1&filename=leather_boots-64",
+      "asset": "src/main/resources/static/item-icons/blockrender/minecraft/leather_boots.png",
+      "width": 64,
+      "height": 64,
+      "sha256": "243131a27de953a4bef78ade586137fec6751b703b1c1ba1ef209262aa3e8977"
+    },
+    {
+      "id": "minecraft:leather_helmet",
+      "source": "https://blockrender.dev/render/item/leather_helmet.png?size=64&download=1&filename=leather_helmet-64",
+      "asset": "src/main/resources/static/item-icons/blockrender/minecraft/leather_helmet.png",
+      "width": 64,
+      "height": 64,
+      "sha256": "5031d3f0dd150d9ddca9ac9475ff6174965deb1222d3bccfefc2be90d62807f2"
+    },
+    {
+      "id": "minecraft:leather_chestplate",
+      "source": "https://blockrender.dev/render/item/leather_chestplate.png?size=64&download=1&filename=leather_chestplate-64",
+      "asset": "src/main/resources/static/item-icons/blockrender/minecraft/leather_chestplate.png",
+      "width": 64,
+      "height": 64,
+      "sha256": "4bf81b4995ee0be812ca968970e598c16df80993f96cd299157bd55c3c636268"
+    },
+    {
+      "id": "minecraft:leather_leggings",
+      "source": "https://blockrender.dev/render/item/leather_leggings.png?size=64&download=1&filename=leather_leggings-64",
+      "asset": "src/main/resources/static/item-icons/blockrender/minecraft/leather_leggings.png",
+      "width": 64,
+      "height": 64,
+      "sha256": "91f08ebf7497761dd6dc65258ff33beb51dd830f77571ffe8c3450b1c1b7d9ad"
+    },
+    {
+      "id": "minecraft:leather_horse_armor",
+      "source": "https://blockrender.dev/render/item/leather_horse_armor.png?size=64&download=1&filename=leather_horse_armor-64",
+      "asset": "src/main/resources/static/item-icons/blockrender/minecraft/leather_horse_armor.png",
+      "width": 64,
+      "height": 64,
+      "sha256": "2b771e46742b92fcbae0ef708df8faf02d7446e959da208777550116f2b0865f"
+    }
+  ]
+}

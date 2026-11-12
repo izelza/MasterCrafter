@@ -39,20 +39,20 @@ Fältet saknar placeholder och har kvar en tillgänglig label.
 
 ## Ofärgat läder
 
-Originalens vita `textures/item/leather_*.png` är färgningsbara baslager.
-`models/item/leather_*.json` anger ett andra, ofärgat `*_overlay.png`-lager.
-`items/leather_*.json` anger standardfärgen `-6265536`, dvs. RGB `#A06540`,
-för helmet, chestplate, leggings, boots och horse_armor.
+Oscar valde 2026-11-12 färdiga 64×64-bilder från [Blockrender](https://blockrender.dev/).
+Utgångspunkt var hans [direktlänk till Leather Boots](https://blockrender.dev/render/item/leather_boots.png?size=64&download=1&filename=leather_boots-64).
+Motsvarande adresser fungerade för helmet, chestplate, leggings och horse_armor.
 
-`UndyedLeatherIcons` multiplicerar baslagrets RGB med standardfärgen,
-behåller alfa och ritar sedan detaljlagret med vanlig alfakomposition.
-De fem PNG-resultaten cachas i minnet vid start. `ItemIconController`
-serverar dem på `/item-icons/minecraft/leather_*.png`. Katalogens ikon-URL
-har `?v=undyed-1` för just dessa fem föremål, så att en tidigare sparad vit
-bastextur inte återanvänds. HTTP-svaret har också `Cache-Control: no-cache`
-för att kräva omvalidering. Övriga ikoner förblir statiska resurser.
-Detta gäller också quiz, mål och muspekare.
+Alla fem PNG-filer sparas oförändrade i
+`src/main/resources/static/item-icons/blockrender/minecraft/`.
+Exakta nedladdningsadresser, dimensioner och SHA-256 finns i
+[referensfilen](references/blockrender-leather-icons.json).
 
-Bastexturerna behålls i `mc-resources`; oförändrade överlägg finns i
-`src/main/resources/minecraft/icon-overlays/`. Renderingen behöver varken
-extern tjänst, grafikskärm eller nya beroenden.
+`ItemCatalog` prioriterar dessa lokala bilder framför bastexturerna i
+`mc-resources`. Adressen `/item-icons/blockrender/minecraft/leather_*.png`
+skiljer sig från äldre versioners URL och undviker gamla cachade bilder.
+Den används även för quiz, mål, grid och muspekare. Filerna följer med i
+jar-filen; spelaren behöver ingen anslutning till Blockrender.
+
+Den tidigare egna färgningen, specialcontrollern och detaljlagren har
+tagits bort. Originalens bastexturer i `mc-resources` finns kvar.

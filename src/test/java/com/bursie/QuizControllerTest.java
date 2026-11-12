@@ -25,21 +25,23 @@ class QuizControllerTest {
     @Autowired ItemCatalog catalog;
 
     @Test
-    void leatherIconsAreServedAsRenderedPngAndOtherIconsStillWork() throws Exception {
+    void leatherIconsAreUnchanged64PixelBlockrenderFilesAndOtherIconsStillWork() throws Exception {
         for (String part : new String[]{"helmet", "chestplate", "leggings", "boots", "horse_armor"}) {
             var iconUrl = catalog.find("minecraft:leather_" + part).iconUrl();
-            assertThat(iconUrl).endsWith("?v=undyed-1");
+            assertThat(iconUrl).isEqualTo("/item-icons/blockrender/minecraft/leather_" + part + ".png");
             var response = mvc.perform(get(iconUrl))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.IMAGE_PNG))
-                    .andExpect(header().string("Cache-Control", "no-cache"))
                     .andReturn().getResponse();
+            try (var original = new org.springframework.core.io.ClassPathResource("static" + iconUrl).getInputStream()) {
+                assertThat(response.getContentAsByteArray()).containsExactly(original.readAllBytes());
+            }
             var image = javax.imageio.ImageIO.read(new java.io.ByteArrayInputStream(response.getContentAsByteArray()));
-            assertThat(image.getWidth()).isEqualTo(16);
-            assertThat(image.getHeight()).isEqualTo(16);
+            assertThat(image.getWidth()).isEqualTo(64);
+            assertThat(image.getHeight()).isEqualTo(64);
             int brown = 0;
-            for (int y = 0; y < 16; y++) {
-                for (int x = 0; x < 16; x++) {
+            for (int y = 0; y < 64; y++) {
+                for (int x = 0; x < 64; x++) {
                     int pixel = image.getRGB(x, y);
                     if ((pixel >>> 24) == 255 && ((pixel >>> 16) & 255) > ((pixel >>> 8) & 255)
                             && ((pixel >>> 8) & 255) > (pixel & 255)) brown++;

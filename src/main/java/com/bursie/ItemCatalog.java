@@ -35,12 +35,13 @@ public class ItemCatalog {
         for (String id : ids) {
             String name = names.get(id);
             String iconUrl = "/item-icons/" + id.replace(':', '/') + ".png";
+            // Explicitly supplied rendered icons take priority over original base textures.
+            String renderedIconUrl = "/item-icons/blockrender/" + id.replace(':', '/') + ".png";
+            if (new ClassPathResource("static" + renderedIconUrl).exists()) iconUrl = renderedIconUrl;
             if (name == null || name.isBlank()
                     || !new ClassPathResource("static" + iconUrl).exists()) {
                 throw new IllegalStateException("Namn eller ikon saknas för " + id);
             }
-            // A fresh URL prevents previously cached white base textures from being reused.
-            if (UndyedLeatherIcons.contains(id)) iconUrl += "?v=undyed-1";
             loaded.add(new Item(id, name, iconUrl));
         }
         if (loaded.stream().map(Item::name).distinct().count() < 2) {
