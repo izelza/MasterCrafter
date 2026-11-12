@@ -15,6 +15,8 @@ Klicka på **Craft!** för att låta servern kontrollera receptet. Vid fel kan d
 
 **Craft!** och **Skip recipe** sitter direkt under griden. Vänsterklick eller högerklick på ett inventory-item väljer det. Med tangentbord kan du använda Enter/Space på en crafting-ruta för att placera, eller Delete/Backspace för att sudda. Listan kan sökas med engelska namn (t.ex. **oak planks**) och bläddras i; alla tillgängliga föremål går att välja. Inventory-rutorna är kvadratiska med centrerade ikoner och samma utseende som crafting-rutorna. Håll musen över en ikon för att se namnet i en separat Minecraft-liknande tooltip. Drop/Clear-knapparna är borttagna; handen töms automatiskt vid nästa recept.
 
+Skip-facit använder klassiska ingredienser som oak, cobblestone, coal och sand. Valen ligger i [recipe-examples.json](src/main/resources/minecraft/recipe-examples.json), med [kort förklaring](docs/RECEPT-FACIT.md). Alla andra giltiga ingredienser godkänns fortfarande när du spelar.
+
 Frågespelet finns kvar via länken **Item quiz** eller http://localhost:8080/quiz.html. Stoppa servern med IntelliJs stoppknapp.
 
 Hello-exemplet finns kvar på http://localhost:8080/api/hello och svarar `{"message":"Hello Oscar!"}`.

@@ -117,7 +117,7 @@ class CraftingTest {
         missing.set(8, null);
         assertThat(recipes.matches("minecraft:book", missing)).isFalse();
         var overlap = new CraftingRecipe("overlap", "result", false, 0, 0,
-                List.of(Set.of("a", "b"), Set.of("a", "c")));
+                List.of(Set.of("a", "b"), Set.of("a", "c")), List.of("a", "c"));
         var supplied = blank();
         supplied.set(0, "a");
         supplied.set(8, "b");

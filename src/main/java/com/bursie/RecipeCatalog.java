@@ -24,6 +24,7 @@ public class RecipeCatalog {
         try (var input = new ClassPathResource("minecraft/item-tags.json").getInputStream()) {
             tags = mapper.readValue(input, new TypeReference<>() {});
         }
+        var examples = new RecipeExamplePreferences(mapper, tags, items);
         var loaded = new LinkedHashMap<String, List<CraftingRecipe>>();
         var resources = new PathMatchingResourcePatternResolver().getResources("classpath*:minecraft/recipes/*.json");
         for (var resource : resources) {
@@ -41,6 +42,7 @@ public class RecipeCatalog {
             if (result.endsWith("_smithing_template")) continue;
             if (items.find(result) == null) throw new IllegalStateException("Okänt receptresultat: " + result);
             var ingredients = new ArrayList<Set<String>>();
+            var exampleIngredients = new ArrayList<String>();
             int width = 0;
             int height = 0;
             if (shaped) {
@@ -50,17 +52,28 @@ public class RecipeCatalog {
                 for (var row : pattern) {
                     if (row.asText().length() != width) throw new IllegalStateException("Ojämnt receptmönster");
                     for (char symbol : row.asText().toCharArray()) {
-                        ingredients.add(symbol == ' ' ? Set.of()
-                                : expand(json.path("key").get(String.valueOf(symbol)), tags, items));
+                        if (symbol == ' ') {
+                            ingredients.add(Set.of());
+                            exampleIngredients.add(null);
+                        } else {
+                            var ingredient = json.path("key").get(String.valueOf(symbol));
+                            var accepted = expand(ingredient, tags, items);
+                            ingredients.add(accepted);
+                            exampleIngredients.add(examples.choose(ingredient, accepted));
+                        }
                     }
                 }
             } else {
-                for (var ingredient : json.path("ingredients")) ingredients.add(expand(ingredient, tags, items));
+                for (var ingredient : json.path("ingredients")) {
+                    var accepted = expand(ingredient, tags, items);
+                    ingredients.add(accepted);
+                    exampleIngredients.add(examples.choose(ingredient, accepted));
+                }
             }
             if (ingredients.isEmpty() || ingredients.size() > 9 || width > 3 || height > 3) {
                 throw new IllegalStateException("Receptet ryms inte i crafting-griden: " + resource.getFilename());
             }
-            var recipe = new CraftingRecipe(resource.getFilename(), result, shaped, width, height, List.copyOf(ingredients));
+            var recipe = new CraftingRecipe(resource.getFilename(), result, shaped, width, height, ingredients, exampleIngredients);
             loaded.computeIfAbsent(result, ignored -> new ArrayList<>()).add(recipe);
         }
         if (loaded.isEmpty()) throw new IllegalStateException("Inga crafting-recept hittades.");

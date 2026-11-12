@@ -87,6 +87,20 @@ class CraftingServiceTest {
     }
 
     @Test
+    void skipUsesRepresentativeIngredientsWhileAttemptsStillAcceptOtherWoods() {
+        var game = new CraftingSession();
+        game.start(new CraftingSession.Challenge("classic-example", items.find("minecraft:wooden_pickaxe")));
+        var solution = service.reveal(game, "classic-example");
+        assertThat(solution.grid().stream().filter(java.util.Objects::nonNull).map(ItemCatalog.Item::id))
+                .containsExactly("minecraft:oak_planks", "minecraft:oak_planks", "minecraft:oak_planks",
+                        "minecraft:stick", "minecraft:stick");
+        game.start(new CraftingSession.Challenge("other-wood", items.find("minecraft:wooden_pickaxe")));
+        var acacia = Arrays.asList("minecraft:acacia_planks", "minecraft:acacia_planks", "minecraft:acacia_planks",
+                null, "minecraft:stick", null, null, "minecraft:stick", null);
+        assertThat(service.attempt(game, "other-wood", acacia).correct()).isTrue();
+    }
+
+    @Test
     void revealedRecipeIsRepeatableAndCannotBeSubmittedEvenFromCachedAttempt() {
         var game = new CraftingSession();
         game.start(stickChallenge("reveal-question"));

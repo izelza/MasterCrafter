@@ -8,15 +8,30 @@ import java.util.Collections;
 
 /** Ett recept: varje ingrediens innehåller de item-ID:n som accepteras i den rutan. */
 public record CraftingRecipe(String id, String resultId, boolean shaped, int width, int height,
-                             List<Set<String>> ingredients) {
+                             List<Set<String>> ingredients, List<String> exampleIngredients) {
+    public CraftingRecipe {
+        ingredients = List.copyOf(ingredients);
+        exampleIngredients = Collections.unmodifiableList(new ArrayList<>(exampleIngredients));
+        if (ingredients.size() != exampleIngredients.size()) {
+            throw new IllegalArgumentException("Facit och recept måste ha lika många rutor: " + id);
+        }
+        for (int index = 0; index < ingredients.size(); index++) {
+            var accepted = ingredients.get(index);
+            var example = exampleIngredients.get(index);
+            if (accepted.isEmpty() ? example != null : example == null || !accepted.contains(example)) {
+                throw new IllegalArgumentException("Facit innehåller en ogiltig ingrediens: " + id);
+            }
+        }
+    }
+
     /** Ett konkret facit; taggar och alternativa ingredienser får ett giltigt item var. */
     public List<String> exampleGrid() {
         var grid = new ArrayList<String>(Collections.nCopies(9, null));
         for (int index = 0; index < ingredients.size(); index++) {
-            var alternatives = ingredients.get(index);
-            if (!alternatives.isEmpty()) {
+            String example = exampleIngredients.get(index);
+            if (example != null) {
                 int slot = shaped ? (index / width) * 3 + index % width : index;
-                grid.set(slot, alternatives.stream().sorted().findFirst().orElseThrow());
+                grid.set(slot, example);
             }
         }
         return Collections.unmodifiableList(grid);
