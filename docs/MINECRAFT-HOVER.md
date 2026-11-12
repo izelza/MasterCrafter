@@ -33,7 +33,8 @@ Inventory och crafting-grid delar samma CSS för kvadratiska rutor på 72×72,
 fyrpixlars kanter, 48×48-ikoner och bak-/framlager utan vit hover-ram.
 Inventoryts kolumner anpassas efter utrymmet utan att rutorna sträcks.
 Itemnamnet visas vid hover och finns som tillgängligt namn för skärmläsare;
-texten tar ingen plats inne i rutan. Den svarta markeringen för vald ingrediens behålls.
+texten tar ingen plats inne i rutan. Valt item får ingen bestående markering
+i inventoryt; bara muspekarens ikon visar vilket item spelaren håller.
 
 Webbläsarens skärmbild verifierades med pixelprover: tom markerad insida
 blev `#C0C0C0` av originalens två alfalager över `#8B8B8B`. Skuggkanten

@@ -9,8 +9,9 @@
     <link rel="stylesheet" href="/minecraft-font.css">
     <link rel="stylesheet" href="/minecraft-theme.css">
     <link rel="stylesheet" href="/style.css?v=20261112-2">
-    <link rel="stylesheet" href="/crafting.css?v=20261112-2">
-    <script src="/crafting.js?v=20261112-2" type="module"></script>
+    <link rel="stylesheet" href="/crafting.css?v=20261112-3">
+    <link rel="stylesheet" href="/crafting-effects.css?v=20261112-3">
+    <script src="/crafting.js?v=20261112-3" type="module"></script>
 </head>
 <body>
     <header class="site-header">
@@ -30,17 +31,15 @@
                     <img id="target-icon" alt="" width="56" height="56" hidden>
                     <div><p>Your target item</p><strong id="target-name">Loading recipe…</strong></div>
                 </div>
-                <div id="craft-grid" class="craft-grid" role="group" aria-label="Crafting grid, three rows and three columns"></div>
+                <div class="crafting-table-area">
+                    <div id="craft-grid" class="craft-grid" role="group" aria-label="Crafting grid, three rows and three columns"></div>
+                </div>
                 <div class="craft-actions">
                     <button id="craft" type="button" class="next" disabled>Craft!</button>
                     <button id="new-recipe" type="button" class="secondary">Skip recipe</button>
                 </div>
-                <p class="hint">Left-click: empty slot places, filled slot erases. Drag to repeat the first slot's action. Right-click always places. Keyboard: Enter/Space to place, Delete to erase.</p>
-                <div class="selected-item" aria-live="polite">
-                    <img id="selected-icon" alt="" width="32" height="32" hidden>
-                    <span id="selected-name">Empty hands. Choose an ingredient from the inventory.</span>
-                </div>
                 <p id="craft-feedback" class="feedback" role="status" aria-live="polite">Loading recipe…</p>
+                <p id="craft-controls" class="hint">Left-click: empty slot places, filled slot erases. Drag to repeat the first slot's action. Right-click always places. Keyboard: Enter/Space to place, Delete to erase.</p>
             </section>
             <section class="panel" aria-labelledby="inventory-title">
                 <div class="panel-header"><h2 id="inventory-title">Inventory</h2><small>Choose and place</small></div>

@@ -16,6 +16,10 @@ under `body`, utanför inventoryts scrollande yta. Det följer pekaren,
 hålls inom skärmen och visas också vid tangentbordsfokus. Klick,
 scroll, Escape, sidbyte och fönsterbyte döljer det. Överlägget tar inga klick.
 
+Valt item behåller `aria-pressed` för hjälpmedel, men får ingen bestående
+outline, skugga eller annan synlig inventory-markering. Ingen separat
+Holding-rad visas; muspekarens ikon är den enda visuella valmarkeringen.
+
 Tooltipens färger är pixelmätta i Mojangs texturer under
 `assets/minecraft/textures/gui/sprites/tooltip/`:
 

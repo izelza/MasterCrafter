@@ -1,6 +1,7 @@
 import { setupCraftingInput } from './crafting-input.js?v=20261112-2';
 import { setHeldItemCursor } from './item-cursor.js';
 import { setupInventory } from './inventory.js?v=20261112-2';
+import { setupCraftingEffects } from './crafting-effects.js';
 
 const element = id => document.getElementById(id);
 const grid = Array(9).fill(null);
@@ -14,6 +15,7 @@ const gridElement = element('craft-grid');
 const { finishPainting } = setupCraftingInput({
     gridElement, canEdit: canEditGrid, getSelected: () => selected, getCell: index => grid[index], onCellChange: changeCell
 });
+const effects = setupCraftingEffects(gridElement);
 const inventory = setupInventory({ request, createIcon: icon, onSelect: selectItem });
 async function request(url, body) {
     let response;
@@ -80,17 +82,13 @@ function changeCell(index, item) {
 function selectItem(item) {
     finishPainting();
     selected = item;
-    element('selected-icon').hidden = !item;
-    if (item) element('selected-icon').src = item.iconUrl;
-    element('selected-name').textContent = item
-        ? `Holding: ${item.name}. Left-click an empty slot to place or a filled slot to erase. Right-click to place.`
-        : 'Empty hands. Choose an ingredient from the inventory. Left-click a filled slot to erase.';
     setHeldItemCursor(item);
     inventory.setSelected(item);
 }
 
 async function newChallenge(previousSuccess = null) {
     if (working) return;
+    if (!previousSuccess) effects.clear();
     finishPainting();
     working = true;
     solved = false;
@@ -132,6 +130,7 @@ async function craft() {
         });
         solved = result.correct;
         feedback(result.message, result.correct ? 'success' : 'error');
+        effects.play(result.correct);
         if (result.correct) nextRecipeMessage = result.message;
     } catch (error) {
         feedback(error.message, 'error');
@@ -144,6 +143,7 @@ async function craft() {
 
 async function skipRecipe() {
     if (working) return;
+    effects.clear();
     if (!challenge || showingSolution) {
         await newChallenge();
         return;

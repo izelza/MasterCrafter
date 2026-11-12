@@ -1,0 +1,39 @@
+.craft-effect-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+    overflow: hidden;
+}
+.craft-spark {
+    position: absolute;
+    left: 50%;
+    top: 46%;
+    width: var(--spark-size);
+    height: var(--spark-size);
+    background: var(--spark-color);
+    box-shadow: 1px 1px 0 #37373760;
+    animation: craft-spark 500ms ease-out both;
+}
+@keyframes craft-spark {
+    from { transform: translate(-50%, -50%); opacity: 1; }
+    65% { opacity: .9; }
+    to { transform: translate(var(--spark-x), var(--spark-y)); opacity: 0; }
+}
+.craft-grid.is-mistake { animation: craft-nudge 180ms ease-out; }
+.craft-effect-layer[data-result="incorrect"] {
+    background: #b0202010;
+    animation: craft-mistake 220ms ease-out both;
+}
+@keyframes craft-nudge {
+    0%, 100% { transform: translateX(0); }
+    25%, 75% { transform: translateX(-3px); }
+    50% { transform: translateX(3px); }
+}
+@keyframes craft-mistake {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .craft-spark, .craft-grid.is-mistake, .craft-effect-layer[data-result="incorrect"] { animation: none; }
+}

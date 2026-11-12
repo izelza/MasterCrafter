@@ -17,6 +17,8 @@ Klicka på **Craft!** för att låta servern kontrollera receptet. Vid fel kan d
 
 Skip-facit använder klassiska ingredienser som oak, cobblestone, coal och sand. Valen ligger i [recipe-examples.json](src/main/resources/minecraft/recipe-examples.json), med [kort förklaring](docs/RECEPT-FACIT.md). Alla andra giltiga ingredienser godkänns fortfarande när du spelar.
 
+Resultatet ligger direkt under Craft/Skip, med reserverad plats så att kontrollbeskrivningen under det ligger still. Valt item visas bara vid muspekaren, utan Holding-rad eller bestående markering i inventoryt. Rätt svar ger en liten grön/guldig pixelburst över griden som städas bort inom 0,6 sekunder. Fel svar ger en kort skakning och svag röd ton, bortstädad inom 0,24 sekunder. Effekterna blockerar inga klick, fördröjer inte nästa recept och stängs av vid minskad rörelse. Skip har ingen effekt.
+
 Frågespelet finns kvar via länken **Item quiz** eller http://localhost:8080/quiz.html. Stoppa servern med IntelliJs stoppknapp.
 
 Hello-exemplet finns kvar på http://localhost:8080/api/hello och svarar `{"message":"Hello Oscar!"}`.
@@ -97,3 +99,5 @@ Båda spellägena använder Mojangs **Minecraft Seven v2** som lokal webbfont vi
 `src/main/resources/static` innehåller vanlig HTML/CSS/JavaScript. `crafting.js` styr spelvyn och API-anrop; `inventory.js` sköter sökning, sidbyte och val; `item-tooltip.js` visar namn ovanpå menyn; `crafting-input.js` hanterar dragning, tangentbord och touch. `item-cursor.js` skapar och cachar native CSS-muspekare från item-ikoner (32×32 med pixel-skalning och centrerad klickpunkt). Markören följer musen utan att JavaScript måste flytta någon bild på sidan. Filerna laddas som JavaScript-moduler utan npm eller separat byggsteg. Facit hämtas från backend och beräknas inte i frontend.
 
 Sökikonen, tooltipens originalfärger och läderikonerna beskrivs i [docs/MINECRAFT-INVENTORY.md](docs/MINECRAFT-INVENTORY.md). De fem läderikonerna är oförändrade 64×64-PNG från Blockrender, sparade lokalt under `static/item-icons/blockrender/minecraft`. Katalogen prioriterar dessa framför bastexturerna. Samma ikon-URL används i inventory, grid, mål och frågespel, utan externa bildanrop under spelet.
+
+`crafting-effects.js` och `crafting-effects.css` sköter de korta resultateffekterna separat från spelets regler och muskoder. De startas bara av ett kontrollerat crafting-svar; nätverksfel och Skip startar inga animationer.
