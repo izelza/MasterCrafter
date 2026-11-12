@@ -24,6 +24,11 @@ public record CraftingRecipe(String id, String resultId, boolean shaped, int wid
         }
     }
 
+    /** Antal olika ingredienstyper; mängd, tomma rutor och taggens alternativ ökar inte nivån. */
+    public int difficulty() {
+        return (int) ingredients.stream().filter(ingredient -> !ingredient.isEmpty()).distinct().count();
+    }
+
     /** Ett konkret facit; taggar och alternativa ingredienser får ett giltigt item var. */
     public List<String> exampleGrid() {
         var grid = new ArrayList<String>(Collections.nCopies(9, null));

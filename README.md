@@ -17,6 +17,8 @@ Klicka på **Craft!** för att låta servern kontrollera receptet. Vid fel kan d
 
 Skip-facit använder klassiska ingredienser som oak, cobblestone, coal och sand. Valen ligger i [recipe-examples.json](src/main/resources/minecraft/recipe-examples.json), med [kort förklaring](docs/RECEPT-FACIT.md). Alla andra giltiga ingredienser godkänns fortfarande när du spelar.
 
+Backend har också en intern svårighetsgrad per recept: antalet olika ingredienstyper. Upprepningar och tomma rutor räknas inte, och en tagg/alternativlista är en ingredienstyp. `CraftingRecipe.difficulty()` ger nivån och `RecipeCatalog.recipesByDifficulty()` grupperar alla aktiva recept. Detta är för framtida användning och visas inte i spelet. Definition och aktuell fördelning finns i [docs/RECEPT-SVARIGHET.md](docs/RECEPT-SVARIGHET.md).
+
 Resultatet ligger direkt under Craft/Skip, med reserverad plats så att kontrollbeskrivningen under det ligger still. Valt item visas bara vid muspekaren, utan Holding-rad eller bestående markering i inventoryt. Rätt svar ger en grön/guldig pixelburst från Craft-knappens mitt, utanför knappens kanter, som städas bort inom 0,6 sekunder. Spridningen anpassas efter knapp och skärmbredd. Fel svar ger en kort skakning och svag röd ton över griden, bortstädad inom 0,24 sekunder. Effekterna blockerar inga klick, fördröjer inte nästa recept och stängs av vid minskad rörelse. Skip har ingen effekt.
 
 Frågespelet finns kvar via länken **Item quiz** eller http://localhost:8080/quiz.html. Stoppa servern med IntelliJs stoppknapp.

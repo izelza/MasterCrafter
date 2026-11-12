@@ -14,10 +14,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Collections;
+import java.util.TreeMap;
 
 @Component
 public class RecipeCatalog {
     private final Map<String, List<CraftingRecipe>> byResult;
+    private final Map<Integer, List<CraftingRecipe>> byDifficulty;
 
     public RecipeCatalog(ObjectMapper mapper, ItemCatalog items) throws IOException {
         Map<String, Set<String>> tags;
@@ -79,6 +82,14 @@ public class RecipeCatalog {
         if (loaded.isEmpty()) throw new IllegalStateException("Inga crafting-recept hittades.");
         loaded.replaceAll((id, recipes) -> List.copyOf(recipes));
         byResult = Map.copyOf(loaded);
+        var grouped = new TreeMap<Integer, List<CraftingRecipe>>();
+        for (var resultRecipes : loaded.values()) {
+            for (var recipe : resultRecipes) {
+                grouped.computeIfAbsent(recipe.difficulty(), ignored -> new ArrayList<>()).add(recipe);
+            }
+        }
+        grouped.replaceAll((difficulty, recipes) -> List.copyOf(recipes));
+        byDifficulty = Collections.unmodifiableMap(grouped);
     }
 
     private static Set<String> expand(JsonNode node, Map<String, Set<String>> tags, ItemCatalog items) {
@@ -103,6 +114,10 @@ public class RecipeCatalog {
 
     public List<CraftingRecipe> recipesFor(String resultId) {
         return byResult.getOrDefault(resultId, List.of());
+    }
+
+    public Map<Integer, List<CraftingRecipe>> recipesByDifficulty() {
+        return byDifficulty;
     }
 
     public boolean matches(String resultId, List<String> grid) {
