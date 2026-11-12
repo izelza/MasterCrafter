@@ -33,6 +33,12 @@ export function setupInventory({ request, createIcon, onSelect }) {
     inventory.addEventListener('contextmenu', event => event.preventDefault());
     inventory.addEventListener('dragstart', event => event.preventDefault());
 
+    function dropForSearch() {
+        if (selected) onSelect(null);
+    }
+    element('item-search').closest('.search-field').addEventListener('pointerenter', dropForSearch);
+    element('item-search').addEventListener('focus', dropForSearch);
+
     async function loadItems(requestedPage = 0) {
         const version = ++searchVersion;
         tooltip.hide();

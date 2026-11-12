@@ -8,9 +8,9 @@
     <link rel="preload" href="/fonts/Minecraft-Seven_v2.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="/minecraft-font.css">
     <link rel="stylesheet" href="/minecraft-theme.css">
-    <link rel="stylesheet" href="/style.css">
-    <link rel="stylesheet" href="/crafting.css?v=20261112">
-    <script src="/crafting.js?v=20261112" type="module"></script>
+    <link rel="stylesheet" href="/style.css?v=20261112-2">
+    <link rel="stylesheet" href="/crafting.css?v=20261112-2">
+    <script src="/crafting.js?v=20261112-2" type="module"></script>
 </head>
 <body>
     <header class="site-header">
@@ -35,7 +35,7 @@
                     <button id="craft" type="button" class="next" disabled>Craft!</button>
                     <button id="new-recipe" type="button" class="secondary">Skip recipe</button>
                 </div>
-                <p class="hint">Right-click to place. Left-click to erase. Hold either button and drag across slots. Keyboard: Enter/Space to place, Delete to erase.</p>
+                <p class="hint">Left-click: empty slot places, filled slot erases. Drag to repeat the first slot's action. Right-click always places. Keyboard: Enter/Space to place, Delete to erase.</p>
                 <div class="selected-item" aria-live="polite">
                     <img id="selected-icon" alt="" width="32" height="32" hidden>
                     <span id="selected-name">Empty hands. Choose an ingredient from the inventory.</span>

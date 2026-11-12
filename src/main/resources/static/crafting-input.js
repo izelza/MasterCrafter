@@ -1,5 +1,5 @@
 // Mouse/keyboard/touch input. Game flow stays in crafting.js.
-export function setupCraftingInput({ gridElement, canEdit, getSelected, onCellChange }) {
+export function setupCraftingInput({ gridElement, canEdit, getSelected, getCell, onCellChange }) {
     let paintGesture = null;
 
     for (let index = 0; index < 9; index++) {
@@ -57,9 +57,14 @@ export function setupCraftingInput({ gridElement, canEdit, getSelected, onCellCh
         if (event.pointerType !== 'mouse' || ![0, 2].includes(event.button) || !canEdit()) return;
         event.preventDefault();
         finishPainting();
-        if (event.button === 2 && !getSelected()) return;
+        const firstSlot = event.target.closest('.grid-cell');
+        if (!firstSlot || !gridElement.contains(firstSlot)) return;
+        const erasing = event.button === 0 && !!getCell(Number(firstSlot.dataset.slot));
+        const item = erasing ? null : getSelected();
+        if (!erasing && !item) return;
         paintGesture = {
-            pointerId: event.pointerId, item: event.button === 0 ? null : getSelected(),
+            // Freeze the first slot's action and the held item for the whole drag.
+            pointerId: event.pointerId, item,
             buttonMask: event.button === 0 ? 1 : 2, visited: new Set(),
             x: event.clientX, y: event.clientY
         };

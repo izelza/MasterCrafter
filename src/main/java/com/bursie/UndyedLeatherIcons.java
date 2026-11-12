@@ -17,6 +17,14 @@ public class UndyedLeatherIcons {
     private static final int DEFAULT_COLOR = 0xA06540;
     private final Map<String, byte[]> icons;
 
+    public static boolean contains(String id) {
+        return switch (id) {
+            case "minecraft:leather_helmet", "minecraft:leather_chestplate", "minecraft:leather_leggings",
+                 "minecraft:leather_boots", "minecraft:leather_horse_armor" -> true;
+            default -> false;
+        };
+    }
+
     public UndyedLeatherIcons() throws IOException {
         var rendered = new HashMap<String, byte[]>();
         for (String part : new String[]{"helmet", "chestplate", "leggings", "boots", "horse_armor"}) {

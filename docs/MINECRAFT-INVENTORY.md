@@ -47,8 +47,11 @@ för helmet, chestplate, leggings, boots och horse_armor.
 `UndyedLeatherIcons` multiplicerar baslagrets RGB med standardfärgen,
 behåller alfa och ritar sedan detaljlagret med vanlig alfakomposition.
 De fem PNG-resultaten cachas i minnet vid start. `ItemIconController`
-serverar dem på samma `/item-icons/minecraft/leather_*.png`-URL:er som tidigare;
-övriga ikoner förblir statiska resurser. Detta gäller också quiz, mål och muspekare.
+serverar dem på `/item-icons/minecraft/leather_*.png`. Katalogens ikon-URL
+har `?v=undyed-1` för just dessa fem föremål, så att en tidigare sparad vit
+bastextur inte återanvänds. HTTP-svaret har också `Cache-Control: no-cache`
+för att kräva omvalidering. Övriga ikoner förblir statiska resurser.
+Detta gäller också quiz, mål och muspekare.
 
 Bastexturerna behålls i `mc-resources`; oförändrade överlägg finns i
 `src/main/resources/minecraft/icon-overlays/`. Renderingen behöver varken

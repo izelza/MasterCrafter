@@ -27,13 +27,25 @@ class QuizControllerTest {
     @Test
     void leatherIconsAreServedAsRenderedPngAndOtherIconsStillWork() throws Exception {
         for (String part : new String[]{"helmet", "chestplate", "leggings", "boots", "horse_armor"}) {
-            var response = mvc.perform(get("/item-icons/minecraft/leather_" + part + ".png"))
+            var iconUrl = catalog.find("minecraft:leather_" + part).iconUrl();
+            assertThat(iconUrl).endsWith("?v=undyed-1");
+            var response = mvc.perform(get(iconUrl))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.IMAGE_PNG))
+                    .andExpect(header().string("Cache-Control", "no-cache"))
                     .andReturn().getResponse();
             var image = javax.imageio.ImageIO.read(new java.io.ByteArrayInputStream(response.getContentAsByteArray()));
             assertThat(image.getWidth()).isEqualTo(16);
             assertThat(image.getHeight()).isEqualTo(16);
+            int brown = 0;
+            for (int y = 0; y < 16; y++) {
+                for (int x = 0; x < 16; x++) {
+                    int pixel = image.getRGB(x, y);
+                    if ((pixel >>> 24) == 255 && ((pixel >>> 16) & 255) > ((pixel >>> 8) & 255)
+                            && ((pixel >>> 8) & 255) > (pixel & 255)) brown++;
+                }
+            }
+            assertThat(brown).as(part + " HTTP image is brown, not the cached white base").isPositive();
         }
         mvc.perform(get("/item-icons/minecraft/stone.png"))
                 .andExpect(status().isOk()).andExpect(content().contentType(MediaType.IMAGE_PNG));

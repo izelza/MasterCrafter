@@ -88,6 +88,8 @@ button:disabled { opacity: 1; cursor: default; }
 .option.wrong { border-image: none; border-color: var(--mc-outline); background: var(--mc-inset-shadow); color: var(--mc-highlight); }
 .feedback { min-height: 3em; margin: 20px 0 8px; color: var(--mc-highlight); }
 .feedback.success, .feedback.error { font-weight: 650; }
+.feedback.success, .panel .feedback.success { color: #187132; }
+.feedback.error, .panel .feedback.error { color: #b02020; }
 .next { padding: 13px 24px; font-weight: 750; }
 .next span { padding-left: 18px; }
 footer { text-align: center; padding: 20px; font-size: .75rem; color: var(--mc-inset-shadow); background: var(--mc-panel); border-top: 3px solid var(--mc-highlight); }
