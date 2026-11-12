@@ -4,7 +4,7 @@ import { setupInventory } from './inventory.js?v=20261112-5';
 import { setupCraftingEffects } from './crafting-effects.js?v=stack-2';
 import { setupStackPanel } from './stack.js?v=stack-1';
 import { request } from './game-api.js';
-import { setupDebugMenu } from './debug-menu.js?v=2';
+import { setupDebugMenu } from './debug-menu.js?v=3';
 
 const element = id => document.getElementById(id);
 const grid = Array(9).fill(null);

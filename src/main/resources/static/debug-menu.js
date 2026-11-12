@@ -6,8 +6,51 @@ export function setupDebugMenu({ onAction, onOpen, onSelectTarget }) {
     const failure = document.getElementById('debug-failure');
     const complete = document.getElementById('debug-complete');
     const target = document.getElementById('debug-target');
+    let positioned = false;
+    let drag = null;
+
+    function position(left, top) {
+        const bounds = menu.getBoundingClientRect();
+        menu.style.left = `${Math.max(8, Math.min(left, document.documentElement.clientWidth - bounds.width - 8))}px`;
+        menu.style.top = `${Math.max(8, Math.min(top, document.documentElement.clientHeight - bounds.height - 8))}px`;
+    }
+
+    function finishDrag() {
+        const pointerId = drag?.pointerId;
+        drag = null;
+        menu.classList.remove('is-dragging');
+        if (pointerId !== undefined && menu.hasPointerCapture(pointerId)) menu.releasePointerCapture(pointerId);
+    }
+
+    menu.addEventListener('pointerdown', event => {
+        if (event.button !== 0 || event.target.closest('button') || drag) return;
+        event.preventDefault();
+        const bounds = menu.getBoundingClientRect();
+        drag = { pointerId: event.pointerId, x: event.clientX - bounds.left, y: event.clientY - bounds.top };
+        menu.setPointerCapture(event.pointerId);
+        menu.classList.add('is-dragging');
+    });
+    menu.addEventListener('pointermove', event => {
+        if (!drag || event.pointerId !== drag.pointerId) return;
+        if (!(event.buttons & 1)) return finishDrag();
+        position(event.clientX - drag.x, event.clientY - drag.y);
+    });
+    for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) {
+        menu.addEventListener(type, event => {
+            if (event.pointerId === drag?.pointerId) finishDrag();
+        });
+    }
+    window.addEventListener('blur', finishDrag);
+    window.addEventListener('resize', () => {
+        finishDrag();
+        if (!menu.hidden) {
+            const bounds = menu.getBoundingClientRect();
+            position(bounds.left, bounds.top);
+        }
+    });
 
     function close(restoreFocus = false) {
+        finishDrag();
         menu.hidden = true;
         toggle.setAttribute('aria-expanded', 'false');
         if (restoreFocus) toggle.focus({ preventScroll: true });
@@ -17,8 +60,12 @@ export function setupDebugMenu({ onAction, onOpen, onSelectTarget }) {
         if (!menu.hidden) return close();
         onOpen();
         menu.hidden = false;
+        const bounds = positioned ? menu.getBoundingClientRect() : toggle.getBoundingClientRect();
+        position(bounds.left, positioned ? bounds.top : bounds.bottom + 8);
+        positioned = true;
         toggle.setAttribute('aria-expanded', 'true');
     });
+    document.getElementById('debug-close').addEventListener('click', () => close(true));
     document.addEventListener('pointerdown', event => {
         if (!tools.contains(event.target)) close();
     });

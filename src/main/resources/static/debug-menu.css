@@ -2,7 +2,10 @@
 .debug-tools { position: absolute; top: 8px; left: 8px; z-index: 1100; }
 .debug-toggle { width: var(--mc-slot-size); height: var(--mc-slot-size); display: grid; place-items: center; padding: 8px; font-size: 1.5rem; color: var(--mc-outline); background: var(--mc-slot); border: 4px solid var(--mc-inset-shadow); border-image: var(--mc-slot-texture) 1 fill / 4px / 0 stretch; image-rendering: pixelated; }
 .debug-toggle:hover { filter: brightness(1.12); }
-.debug-menu { position: absolute; top: calc(var(--mc-slot-size) + 8px); left: 0; width: min(248px, calc(100vw - 16px)); padding: 12px; box-shadow: 2px 4px 0 #0008; }
-.debug-menu h2 { margin: 0 0 10px; }
-.debug-menu button { display: block; width: 100%; text-align: left; font-size: .85rem; padding: 10px; }
-.debug-menu button + button { margin-top: 6px; }
+.debug-menu { position: fixed; width: min(248px, calc(100vw - 16px)); max-height: calc(100dvh - 16px); overflow-y: auto; padding: 12px; box-shadow: 2px 4px 0 #0008; cursor: grab; user-select: none; touch-action: none; }
+.debug-menu.is-dragging { cursor: grabbing; }
+.debug-menu-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.debug-menu h2 { margin: 0; }
+.debug-menu > button { display: block; width: 100%; text-align: left; font-size: .85rem; padding: 10px; }
+.debug-menu > button + button { margin-top: 6px; }
+.debug-close { width: 26px; height: 26px; padding: 0; display: grid; place-items: center; line-height: 1; }
