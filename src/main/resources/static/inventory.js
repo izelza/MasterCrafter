@@ -36,8 +36,21 @@ export function setupInventory({ request, createIcon, onSelect }) {
     function dropForSearch() {
         if (selected) onSelect(null);
     }
-    element('item-search').closest('.search-field').addEventListener('pointerenter', dropForSearch);
-    element('item-search').addEventListener('focus', dropForSearch);
+    const searchInput = element('item-search');
+    const searchField = searchInput.closest('.search-field');
+    searchField.addEventListener('pointerenter', dropForSearch);
+    searchInput.addEventListener('focus', () => {
+        dropForSearch();
+        searchInput.select();
+    });
+    // Keep the browser from collapsing an existing full selection on a repeated click.
+    searchField.addEventListener('mousedown', event => {
+        if (event.button === 0) event.preventDefault();
+    });
+    searchField.addEventListener('click', () => {
+        searchInput.focus();
+        searchInput.select();
+    });
 
     async function loadItems(requestedPage = 0) {
         const version = ++searchVersion;

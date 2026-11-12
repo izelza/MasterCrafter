@@ -41,6 +41,17 @@ sparad som `static/ui/minecraft/search.png`, SHA-256
 Det grå infällda fältet följer färgerna i `container/creative_inventory/tab_item_search.png`.
 Fältet saknar placeholder och har kvar en tillgänglig label.
 
+Klick i sökfältet eller på förstoringsglaset markerar hela söktexten, även
+om fältet redan har fokus. Tangentbordsfokus markerar också texten.
+`::selection` anger blå bakgrund `#0000FF`, vit text `#FFFFFF` och ingen textskugga.
+Blåvärdet är kontrollerat direkt i Java 26.3-klientens
+`GuiGraphicsExtractor.textHighlight`: `GUI_TEXT_HIGHLIGHT` får färgen
+`-16776961`, dvs. ARGB `0xFF0000FF`. `EditBox` använder denna metod;
+dess valbara inverteringspass använder `-1` (`0xFFFFFFFF`). Webbversionen
+sätter vit text uttryckligen för att undvika operativsystemets standardfärger.
+Källreferens finns i [minecraft-search-selection.json](references/minecraft-search-selection.json).
+Webbläsarens skärmbild har också kontrollerats för exakt blå och vita pixlar.
+
 ## Ofärgat läder
 
 Oscar valde 2026-11-12 färdiga 64×64-bilder från [Blockrender](https://blockrender.dev/).

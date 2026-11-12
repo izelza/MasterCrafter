@@ -52,6 +52,7 @@ main { display: block; width: min(1160px, 100%); margin: auto; padding: 28px 24p
 .search-field { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; padding: 6px 8px; background: var(--mc-slot); border: 2px solid var(--mc-inset-shadow); border-right-color: var(--mc-highlight); border-bottom-color: var(--mc-highlight); }
 .search-symbol { width: 24px; height: 24px; image-rendering: pixelated; flex: none; }
 input[type="search"] { width: 100%; min-width: 0; border: 0; border-radius: 0; background: transparent; padding: 0; color: var(--mc-outline); font: inherit; outline: none; appearance: none; }
+#item-search::selection { background-color: #0000ff; color: #ffffff; text-shadow: none; }
 .search-field:focus-within { box-shadow: inset 0 0 0 1px var(--mc-inset-shadow); }
 .inventory-status { font-size: .8rem; color: var(--mc-inset-shadow); min-height: 1.5em; margin: 14px 0 10px; }
 .inventory { display: grid; grid-template-columns: repeat(auto-fill, var(--mc-slot-size)); gap: 5px; max-height: 348px; overflow-y: auto; padding: 5px; margin: -5px; scrollbar-color: var(--mc-slot) var(--mc-panel); }

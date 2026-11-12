@@ -1,0 +1,13 @@
+{
+  "minecraftVersion": "26.3",
+  "clientUrl": "https://piston-data.mojang.com/v1/objects/e877b6a07acd633fb3bb475002175cec036e7b87/client.jar",
+  "clientSha1": "e877b6a07acd633fb3bb475002175cec036e7b87",
+  "caller": "net.minecraft.client.gui.components.EditBox",
+  "method": "net.minecraft.client.gui.GuiGraphicsExtractor.textHighlight(int,int,int,int,boolean)",
+  "highlightPipeline": "GUI_TEXT_HIGHLIGHT",
+  "highlightArgbSigned": -16776961,
+  "highlightRgb": "#0000FF",
+  "invertPassArgbSigned": -1,
+  "webSelectedTextRgb": "#FFFFFF",
+  "verified": "2026-11-12, client bytecode inspected; exact blue and white screenshot pixels checked"
+}

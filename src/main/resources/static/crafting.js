@@ -1,6 +1,6 @@
 import { setupCraftingInput } from './crafting-input.js?v=20261112-2';
 import { setHeldItemCursor } from './item-cursor.js';
-import { setupInventory } from './inventory.js?v=20261112-2';
+import { setupInventory } from './inventory.js?v=20261112-5';
 import { setupCraftingEffects } from './crafting-effects.js?v=20261112-4';
 
 const element = id => document.getElementById(id);
