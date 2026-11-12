@@ -12,8 +12,10 @@ main { display: block; width: min(1160px, 100%); margin: auto; padding: 28px 24p
 .target p { color: var(--mc-outline); margin: 0 0 4px; font-size: .8rem; }
 .target strong { font-size: 1.15rem; overflow-wrap: anywhere; }
 .craft-grid { display: grid; grid-template-columns: repeat(3, var(--mc-slot-size)); gap: 5px; justify-content: center; margin: 24px 0 16px; user-select: none; }
-.grid-cell, .inventory-item { --slot-pixel: 4px; position: relative; isolation: isolate; width: var(--mc-slot-size); height: var(--mc-slot-size); padding: 8px; display: grid; place-items: center; background: var(--mc-slot); color: var(--mc-outline); border: var(--slot-pixel) solid var(--mc-inset-shadow); border-image: var(--mc-slot-texture) 1 fill / var(--slot-pixel) / 0 stretch; border-radius: 0; image-rendering: pixelated; }
-.grid-cell img, .inventory-item img { position: relative; z-index: 1; width: 48px; height: 48px; image-rendering: pixelated; pointer-events: none; }
+.grid-cell, .inventory-item { --slot-pixel: 4px; position: relative; isolation: isolate; width: var(--mc-slot-size); height: var(--mc-slot-size); min-width: 0; padding: 8px; display: grid; grid-template: 1fr / minmax(0, 1fr); place-items: center; background: var(--mc-slot); color: var(--mc-outline); border: var(--slot-pixel) solid var(--mc-inset-shadow); border-image: var(--mc-slot-texture) 1 fill / var(--slot-pixel) / 0 stretch; border-radius: 0; image-rendering: pixelated; }
+.grid-cell img, .inventory-item img { position: relative; z-index: 1; grid-area: 1 / 1; place-self: center; display: block; width: 48px; height: 48px; max-width: 100%; object-fit: contain; image-rendering: pixelated; pointer-events: none; }
+/* Also protect the slot geometry if an older cached script adds a name span. */
+.inventory-item > :not(img) { display: none; }
 /* Vanilla sprites: 24x24 with 4 transparent pixels around the 16x16 highlight.
    At our 4x scale the 96x96 layers cover exactly the 64x64 slot interior.
    The existing 4px bevel stays untouched. See docs/MINECRAFT-HOVER.md. */
@@ -40,7 +42,6 @@ main { display: block; width: min(1160px, 100%); margin: auto; padding: 28px 24p
 .craft-grid.is-solution .grid-cell { opacity: 1; }
 .holding-item, .holding-item * { cursor: var(--held-item-cursor) !important; }
 .hint { color: var(--mc-inset-shadow); font-size: .8rem; line-height: 1.5; margin: 12px 0; }
-.tools { display: flex; gap: 8px; justify-content: center; }
 .secondary { padding: 10px 14px; }
 .selected-item { display: flex; align-items: center; gap: 12px; padding: 14px 0; min-height: 66px; border-bottom: 2px solid var(--mc-slot); }
 .selected-item img { width: 32px; height: 32px; image-rendering: pixelated; }
@@ -50,14 +51,17 @@ main { display: block; width: min(1160px, 100%); margin: auto; padding: 28px 24p
 .panel .feedback { margin: 14px 0 0; min-height: 3em; font-size: .9rem; color: var(--mc-outline); }
 .search-label { display: block; color: var(--mc-inset-shadow); font-size: .85rem; margin-bottom: 8px; }
 .search-box { display: flex; gap: 8px; }
-input[type="search"] { width: 100%; min-width: 0; border: 2px solid var(--mc-inset-shadow); border-right-color: var(--mc-highlight); border-bottom-color: var(--mc-highlight); border-radius: 0; background: var(--mc-slot); padding: 12px; color: var(--mc-outline); font: inherit; }
-input[type="search"]::placeholder { color: var(--mc-outline); opacity: 1; }
-input:focus-visible { outline: 2px solid var(--mc-outline); outline-offset: 3px; }
+.search-field { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; padding: 6px 8px; background: var(--mc-slot); border: 2px solid var(--mc-inset-shadow); border-right-color: var(--mc-highlight); border-bottom-color: var(--mc-highlight); }
+.search-symbol { width: 24px; height: 24px; image-rendering: pixelated; flex: none; }
+input[type="search"] { width: 100%; min-width: 0; border: 0; border-radius: 0; background: transparent; padding: 0; color: var(--mc-outline); font: inherit; outline: none; appearance: none; }
+.search-field:focus-within { box-shadow: inset 0 0 0 1px var(--mc-inset-shadow); }
 .inventory-status { font-size: .8rem; color: var(--mc-inset-shadow); min-height: 1.5em; margin: 14px 0 10px; }
 .inventory { display: grid; grid-template-columns: repeat(auto-fill, var(--mc-slot-size)); gap: 5px; max-height: 348px; overflow-y: auto; padding: 5px; margin: -5px; scrollbar-color: var(--mc-slot) var(--mc-panel); }
 .inventory-item[aria-pressed="true"] { outline: 3px solid var(--mc-outline); outline-offset: -3px; }
 .pagination { display: flex; align-items: center; justify-content: space-between; margin-top: 18px; gap: 8px; font-size: .8rem; }
 #page-label { color: var(--mc-inset-shadow); }
+.item-tooltip { position: fixed; z-index: 1000; width: max-content; max-width: min(420px, calc(100vw - 16px)); padding: 10px 12px; color: #fff; font-size: 1rem; line-height: 1.3; overflow-wrap: anywhere; text-shadow: 2px 2px #3f3f3f; pointer-events: none; background: rgba(16, 0, 16, .941176); border: 2px solid transparent; border-image: linear-gradient(rgba(80, 0, 255, .313725), rgba(40, 0, 127, .313725)) 1; box-shadow: 0 0 0 2px rgba(16, 0, 16, .941176); }
+.item-tooltip[hidden] { display: none; }
 @media (max-width: 900px) {
     .crafting-layout { grid-template-columns: minmax(280px, .9fr) minmax(0, 1fr); gap: 16px; }
     .panel { padding: 18px; }

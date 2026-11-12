@@ -1,5 +1,6 @@
 import { setupCraftingInput } from './crafting-input.js';
 import { setHeldItemCursor } from './item-cursor.js';
+import { setupInventory } from './inventory.js';
 
 const element = id => document.getElementById(id);
 const grid = Array(9).fill(null);
@@ -9,14 +10,11 @@ let solved = false;
 let working = false;
 let showingSolution = false;
 let solutionRequested = false;
-let page = 0;
-let pages = 1;
-let searchVersion = 0;
-let searchTimer;
 const gridElement = element('craft-grid');
 const { finishPainting } = setupCraftingInput({
     gridElement, canEdit: canEditGrid, getSelected: () => selected, onCellChange: changeCell
 });
+const inventory = setupInventory({ request, createIcon: icon, onSelect: selectItem });
 async function request(url, body) {
     let response;
     try {
@@ -63,8 +61,6 @@ function refreshGrid() {
         button.disabled = !canEditGrid();
     });
     element('craft').disabled = !canEditGrid() || grid.every(item => !item);
-    element('clear-grid').disabled = !canEditGrid() || grid.every(item => !item);
-    element('drop-item').disabled = working || !selected;
     element('new-recipe').disabled = working;
     element('new-recipe').textContent = !challenge ? 'New recipe'
         : showingSolution ? 'Next recipe →' : solutionRequested ? 'Retry reveal' : 'Skip recipe';
@@ -89,48 +85,7 @@ function selectItem(item) {
         ? `Holding: ${item.name}. Right-click to place; left-click to erase. Drag with either button.`
         : 'Empty hands. Choose an ingredient from the inventory. Left-click still erases.';
     setHeldItemCursor(item);
-    element('drop-item').disabled = working || !item;
-    for (const button of element('inventory').children) {
-        button.setAttribute('aria-pressed', String(button.dataset.itemId === item?.id));
-    }
-}
-
-async function loadItems(requestedPage = 0) {
-    const version = ++searchVersion;
-    element('inventory-status').textContent = 'Searching for ingredients…';
-    element('previous-page').disabled = true;
-    element('next-page').disabled = true;
-    element('retry-items').hidden = true;
-    try {
-        const result = await request(`/api/items?q=${encodeURIComponent(element('item-search').value)}&page=${requestedPage}`);
-        if (version !== searchVersion) return;
-        page = result.page;
-        pages = result.pages;
-        element('inventory').replaceChildren();
-        for (const item of result.items) {
-            const button = document.createElement('button');
-            button.type = 'button';
-            button.className = 'inventory-item';
-            button.dataset.itemId = item.id;
-            button.title = item.name;
-            button.setAttribute('aria-label', item.name);
-            button.setAttribute('aria-pressed', String(selected?.id === item.id));
-            button.append(icon(item));
-            button.addEventListener('click', () => selectItem(item));
-            element('inventory').append(button);
-        }
-        element('inventory').scrollTop = 0;
-        element('inventory-status').textContent = result.total
-            ? `${result.total.toLocaleString('en-US')} items. Hover over an icon to see its full name.`
-            : 'No items found. Try a different name.';
-        element('page-label').textContent = `Page ${page + 1} of ${pages}`;
-        element('previous-page').disabled = page === 0;
-        element('next-page').disabled = page + 1 >= pages;
-    } catch (error) {
-        if (version !== searchVersion) return;
-        element('inventory-status').textContent = error.message;
-        element('retry-items').hidden = false;
-    }
+    inventory.setSelected(item);
 }
 
 async function newChallenge(previousSuccess = null) {
@@ -211,31 +166,7 @@ async function skipRecipe() {
     }
 }
 
-element('item-search').addEventListener('input', () => {
-    ++searchVersion;
-    clearTimeout(searchTimer);
-    element('previous-page').disabled = true;
-    element('next-page').disabled = true;
-    searchTimer = setTimeout(() => loadItems(), 180);
-});
-element('clear-search').addEventListener('click', () => {
-    clearTimeout(searchTimer);
-    element('item-search').value = '';
-    element('item-search').focus();
-    loadItems();
-});
-element('previous-page').addEventListener('click', () => loadItems(page - 1));
-element('next-page').addEventListener('click', () => loadItems(page + 1));
-element('retry-items').addEventListener('click', () => loadItems());
-element('drop-item').addEventListener('click', () => selectItem(null));
-element('clear-grid').addEventListener('click', () => {
-    if (!canEditGrid()) return;
-    grid.fill(null);
-    refreshGrid();
-    feedback('The grid is empty. Try a new combination.');
-});
 element('craft').addEventListener('click', craft);
 element('new-recipe').addEventListener('click', skipRecipe);
 refreshGrid();
-loadItems();
 newChallenge();

@@ -9,8 +9,8 @@
     <link rel="stylesheet" href="/minecraft-font.css">
     <link rel="stylesheet" href="/minecraft-theme.css">
     <link rel="stylesheet" href="/style.css">
-    <link rel="stylesheet" href="/crafting.css">
-    <script src="/crafting.js" type="module"></script>
+    <link rel="stylesheet" href="/crafting.css?v=20261112">
+    <script src="/crafting.js?v=20261112" type="module"></script>
 </head>
 <body>
     <header class="site-header">
@@ -31,18 +31,14 @@
                     <div><p>Your target item</p><strong id="target-name">Loading recipe…</strong></div>
                 </div>
                 <div id="craft-grid" class="craft-grid" role="group" aria-label="Crafting grid, three rows and three columns"></div>
-                <div class="tools">
-                    <button id="drop-item" type="button" class="secondary" disabled>Drop item</button>
-                    <button id="clear-grid" type="button" class="secondary">Clear grid</button>
+                <div class="craft-actions">
+                    <button id="craft" type="button" class="next" disabled>Craft!</button>
+                    <button id="new-recipe" type="button" class="secondary">Skip recipe</button>
                 </div>
                 <p class="hint">Right-click to place. Left-click to erase. Hold either button and drag across slots. Keyboard: Enter/Space to place, Delete to erase.</p>
                 <div class="selected-item" aria-live="polite">
                     <img id="selected-icon" alt="" width="32" height="32" hidden>
                     <span id="selected-name">Empty hands. Choose an ingredient from the inventory.</span>
-                </div>
-                <div class="craft-actions">
-                    <button id="craft" type="button" class="next" disabled>Craft!</button>
-                    <button id="new-recipe" type="button" class="secondary">Skip recipe</button>
                 </div>
                 <p id="craft-feedback" class="feedback" role="status" aria-live="polite">Loading recipe…</p>
             </section>
@@ -50,7 +46,10 @@
                 <div class="panel-header"><h2 id="inventory-title">Inventory</h2><small>Choose and place</small></div>
                 <label for="item-search" class="search-label">Search all items</label>
                 <div class="search-box">
-                    <input id="item-search" type="search" placeholder="For example, oak planks or stick" autocomplete="off" maxlength="100">
+                    <div class="search-field">
+                        <img src="/ui/minecraft/search.png" class="search-symbol" alt="" aria-hidden="true">
+                        <input id="item-search" type="search" autocomplete="off" maxlength="100" spellcheck="false">
+                    </div>
                     <button id="clear-search" type="button" class="secondary">Clear</button>
                 </div>
                 <p id="inventory-status" class="inventory-status" role="status" aria-live="polite">Loading ingredients…</p>

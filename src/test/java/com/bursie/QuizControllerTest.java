@@ -25,6 +25,21 @@ class QuizControllerTest {
     @Autowired ItemCatalog catalog;
 
     @Test
+    void leatherIconsAreServedAsRenderedPngAndOtherIconsStillWork() throws Exception {
+        for (String part : new String[]{"helmet", "chestplate", "leggings", "boots", "horse_armor"}) {
+            var response = mvc.perform(get("/item-icons/minecraft/leather_" + part + ".png"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentType(MediaType.IMAGE_PNG))
+                    .andReturn().getResponse();
+            var image = javax.imageio.ImageIO.read(new java.io.ByteArrayInputStream(response.getContentAsByteArray()));
+            assertThat(image.getWidth()).isEqualTo(16);
+            assertThat(image.getHeight()).isEqualTo(16);
+        }
+        mvc.perform(get("/item-icons/minecraft/stone.png"))
+                .andExpect(status().isOk()).andExpect(content().contentType(MediaType.IMAGE_PNG));
+    }
+
+    @Test
     void questionContainsTwoDistinctNamesAndAnAvailableIcon() throws Exception {
         var question = newQuestion(new MockHttpSession());
         assertThat(question.get("options").size()).isEqualTo(2);
