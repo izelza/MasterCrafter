@@ -1,6 +1,4 @@
 export function setupDebugMenu({ onAction, onOpen, onSelectTarget }) {
-    const tools = document.getElementById('debug-tools');
-    const toggle = document.getElementById('debug-toggle');
     const menu = document.getElementById('debug-menu');
     const success = document.getElementById('debug-success');
     const failure = document.getElementById('debug-failure');
@@ -8,11 +6,11 @@ export function setupDebugMenu({ onAction, onOpen, onSelectTarget }) {
     const target = document.getElementById('debug-target');
     let positioned = false;
     let drag = null;
+    let returnFocus = null;
 
     function position(left, top) {
-        const bounds = menu.getBoundingClientRect();
-        menu.style.left = `${Math.max(8, Math.min(left, document.documentElement.clientWidth - bounds.width - 8))}px`;
-        menu.style.top = `${Math.max(8, Math.min(top, document.documentElement.clientHeight - bounds.height - 8))}px`;
+        menu.style.left = `${left}px`;
+        menu.style.top = `${top}px`;
     }
 
     function finishDrag() {
@@ -33,7 +31,10 @@ export function setupDebugMenu({ onAction, onOpen, onSelectTarget }) {
     menu.addEventListener('pointermove', event => {
         if (!drag || event.pointerId !== drag.pointerId) return;
         if (!(event.buttons & 1)) return finishDrag();
-        position(event.clientX - drag.x, event.clientY - drag.y);
+        // The pointer stops at the viewport edge; the panel may extend beyond it.
+        const x = Math.max(0, Math.min(event.clientX, document.documentElement.clientWidth));
+        const y = Math.max(0, Math.min(event.clientY, document.documentElement.clientHeight));
+        position(x + scrollX - drag.x, y + scrollY - drag.y);
     });
     for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) {
         menu.addEventListener(type, event => {
@@ -41,54 +42,35 @@ export function setupDebugMenu({ onAction, onOpen, onSelectTarget }) {
         });
     }
     window.addEventListener('blur', finishDrag);
-    window.addEventListener('resize', () => {
-        finishDrag();
-        if (!menu.hidden) {
-            const bounds = menu.getBoundingClientRect();
-            position(bounds.left, bounds.top);
-        }
-    });
+    window.addEventListener('resize', finishDrag);
 
-    function close(restoreFocus = false) {
+    function close() {
         finishDrag();
         menu.hidden = true;
-        toggle.setAttribute('aria-expanded', 'false');
-        if (restoreFocus) toggle.focus({ preventScroll: true });
+        returnFocus?.focus({ preventScroll: true });
     }
 
-    toggle.addEventListener('click', () => {
-        if (!menu.hidden) return close();
+    function open() {
+        returnFocus = document.activeElement;
         onOpen();
         menu.hidden = false;
-        const bounds = positioned ? menu.getBoundingClientRect() : toggle.getBoundingClientRect();
-        position(bounds.left, positioned ? bounds.top : bounds.bottom + 8);
-        positioned = true;
-        toggle.setAttribute('aria-expanded', 'true');
-    });
-    document.getElementById('debug-close').addEventListener('click', () => close(true));
-    document.addEventListener('pointerdown', event => {
-        if (!tools.contains(event.target)) close();
-    });
-    document.addEventListener('focusin', event => {
-        if (!tools.contains(event.target)) close();
-    });
-    tools.addEventListener('keydown', event => {
-        if (event.key === 'Escape' && !menu.hidden) {
-            event.preventDefault();
-            close(true);
+        const bounds = menu.getBoundingClientRect();
+        if (!positioned || bounds.right <= 0 || bounds.left >= innerWidth || bounds.bottom <= 0 || bounds.top >= innerHeight) {
+            position(scrollX + 8, scrollY + 8);
         }
-    });
+        positioned = true;
+    }
+    document.getElementById('debug-close').addEventListener('click', close);
     for (const [button, action] of [[success, 'SUCCESS'], [failure, 'FAILURE'], [complete, 'COMPLETE_STACK']]) {
         button.addEventListener('click', () => {
-            close(true);
             onAction(action);
         });
     }
     target.addEventListener('click', () => {
-        close(true);
         onSelectTarget();
     });
     return {
+        open,
         render({ canAttempt, canComplete, canSelectTarget, selectingTarget }) {
             success.disabled = failure.disabled = !canAttempt;
             complete.disabled = !canComplete;

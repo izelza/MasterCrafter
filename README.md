@@ -88,7 +88,12 @@ Kör tester med `.\mvnw.cmd test`.
 
 ## Backendens ansvarsfördelning
 
-Debugknappen `>_` uppe till vänster öppnar tre testfunktioner: rätt crafting-svar,
+Fyll alla nio crafting-rutor med acaciabåtar och tryck Craft för att öppna den
+dolda debugmenyn. Genvägen fungerar även under The Stack och skickar inget
+crafting-försök, så aktuellt mål och framsteg behålls. Menyn stängs bara med x,
+ligger kvar vid klick utanför och på funktioner, och följer sidan vid scrollning.
+Dra i bakgrunden eller kanten; muspekaren begränsar draget och panelen får gå
+utanför skärmen. Menyn kan simulera rätt crafting-svar,
 fel crafting-svar och fullbordad pågående Stack. De använder samma backendregler,
 framsteg, timer och frontend-effekter som vanligt spel. `POST /api/crafting/debug`
 tar `{challengeId, action}` där action är `SUCCESS`, `FAILURE` eller `COMPLETE_STACK`.
